@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+  <changeSet id="create-table-user" author="aldane">
+    <createTable tableName="user">
+      <column name="id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="username" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="password" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="comment" type="TEXT"/>
+      <column name="last_access" type="TIMESTAMP"/>
+      <column name="record_date" type="TIMESTAMP"/>
+      <column name="status_id" type="INT"/>
+      <column name="role_id" type="INT"/>
+    </createTable>
+  </changeSet>
+  <changeSet id="create-table-account_entry" author="aldane">
+    <createTable tableName="account_entry">
+      <column name="id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="amount" type="DOUBLE PRECISION">
+        <constraints nullable="false"/>
+      </column>
+      <column name="comment" type="TEXT"/>
+      <column name="date" type="DATE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="store_id" type="INT"/>
+      <column name="brand_id" type="INT"/>
+      <column name="status_id" type="INT"/>
+      <column name="category_id" type="INT"/>
+      <column name="wallet_id" type="INT"/>
+      <column name="type_operation_id" type="INT"/>
+    </createTable>
+  </changeSet>
+  <changeSet id="create-table-brand" author="aldane">
+    <createTable tableName="brand">
+      <column name="id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="comment" type="TEXT"/>
+      <column name="status_id" type="INT"/>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modification" type="TIMESTAMP"/>
+      <column name="user_id" type="INT"/>
+    </createTable>
+  </changeSet>
+  <changeSet id="create-table-category" author="aldane">
+    <createTable tableName="category">
+      <column name="id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="comment" type="TEXT"/>
+      <column name="status_id" type="INT"/>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modification" type="TIMESTAMP"/>
+      <column name="user_id" type="INT"/>
+    </createTable>
+  </changeSet>
+  <changeSet id="create-table-operation_type" author="aldane">
+    <createTable tableName="operation_type">
+      <column name="id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="comment" type="TEXT"/>
+      <column name="status_id" type="INT"/>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modification" type="DATE"/>
+    </createTable>
+  </changeSet>
+  <changeSet id="create-table-role" author="aldane">
+    <createTable tableName="role">
+      <column name="id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="comment" type="TEXT"/>
+      <column name="status_id" type="INT"/>
+    </createTable>
+  </changeSet>
+  <changeSet id="create-table-status" author="aldane">
+    <createTable tableName="status">
+      <column name="id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet id="create-table-store" author="aldane">
+    <createTable tableName="store">
+      <column name="id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="comment" type="TEXT"/>
+      <column name="status_id" type="INT"/>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_modification" type="TIMESTAMP"/>
+      <column name="user_id" type="INT"/>
+    </createTable>
+  </changeSet>
+  <changeSet id="create-table-wallet" author="aldane">
+    <createTable tableName="wallet">
+      <column name="id" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="budget" type="DOUBLE PRECISION">
+        <constraints nullable="false"/>
+      </column>
+      <column name="comment" type="TEXT"/>
+      <column name="status_id" type="INT"/>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="INT"/>
+      <column name="last_modification" type="TIMESTAMP"/>
+      <column name="creation_date" type="TIMESTAMP"/>
+    </createTable>
+  </changeSet>
+</databaseChangeLog>

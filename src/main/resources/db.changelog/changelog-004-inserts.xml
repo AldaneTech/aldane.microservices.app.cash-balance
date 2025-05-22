@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+  <changeSet id="insert-status-1" author="aldane">
+    <insert tableName="status">
+      <column name="id" value="1"/>
+      <column name="name" value="Activo"/>
+    </insert>
+  </changeSet>
+  <changeSet id="insert-status-2" author="aldane">
+    <insert tableName="status">
+      <column name="id" value="2"/>
+      <column name="name" value="Inactivo"/>
+    </insert>
+  </changeSet>
+  <changeSet id="insert-role-1" author="aldane">
+    <insert tableName="role">
+      <column name="id" value="1"/>
+      <column name="name" value="ADMIN"/>
+      <column name="comment" value="Role for admin user"/>
+      <column name="status_id" value="1"/>
+    </insert>
+  </changeSet>
+  <changeSet id="insert-role-2" author="aldane">
+    <insert tableName="role">
+      <column name="id" value="2"/>
+      <column name="name" value="USER"/>
+      <column name="comment" value="Role for common user"/>
+      <column name="status_id" value="1"/>
+    </insert>
+  </changeSet>
+  <changeSet id="insert-operation_type-1" author="aldane">
+    <insert tableName="operation_type">
+      <column name="id" value="1"/>
+      <column name="comment" value="Tipo para los ingresos"/>
+      <column name="status_id" value="1"/>
+      <column name="name" value="Ingreso"/>
+      <column name="last_modification" value="2024-08-23"/>
+    </insert>
+  </changeSet>
+  <changeSet id="insert-operation_type-2" author="aldane">
+    <insert tableName="operation_type">
+      <column name="id" value="2"/>
+      <column name="comment" value="Tipo para los gastos"/>
+      <column name="status_id" value="1"/>
+      <column name="name" value="Gasto"/>
+      <column name="last_modification" value="2024-08-23"/>
+    </insert>
+  </changeSet>
+  <changeSet id="insert-operation_type-3" author="aldane">
+    <insert tableName="operation_type">
+      <column name="id" value="3"/>
+      <column name="comment" value="Tipo para las inversiones"/>
+      <column name="status_id" value="1"/>
+      <column name="name" value="Inversión"/>
+      <column name="last_modification" value="2024-08-23"/>
+    </insert>
+  </changeSet>
+</databaseChangeLog>

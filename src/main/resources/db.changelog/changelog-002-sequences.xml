@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+  <changeSet id="create-sequence-User_id_seq" author="aldane">
+    <createSequence sequenceName="User_id_seq" startValue="1" incrementBy="1"/>
+  </changeSet>
+  <changeSet id="alter-sequence-User_id_seq" author="aldane">
+    <addDefaultValue tableName="user" columnName="id" defaultValueComputed="nextval('public.&quot;User_id_seq&quot;'::regclass)"/>
+  </changeSet>
+  <changeSet id="create-sequence-accountentry_id_seq" author="aldane">
+    <createSequence sequenceName="accountentry_id_seq" startValue="1" incrementBy="1"/>
+  </changeSet>
+  <changeSet id="alter-sequence-accountentry_id_seq" author="aldane">
+    <addDefaultValue tableName="account_entry" columnName="id" defaultValueComputed="nextval('public.&quot;accountentry_id_seq&quot;'::regclass)"/>
+  </changeSet>
+  <changeSet id="create-sequence-brand_id_seq" author="aldane">
+    <createSequence sequenceName="brand_id_seq" startValue="1" incrementBy="1"/>
+  </changeSet>
+  <changeSet id="alter-sequence-brand_id_seq" author="aldane">
+    <addDefaultValue tableName="brand" columnName="id" defaultValueComputed="nextval('public.&quot;brand_id_seq&quot;'::regclass)"/>
+  </changeSet>
+  <changeSet id="create-sequence-category_id_seq" author="aldane">
+    <createSequence sequenceName="category_id_seq" startValue="1" incrementBy="1"/>
+  </changeSet>
+  <changeSet id="alter-sequence-category_id_seq" author="aldane">
+    <addDefaultValue tableName="category" columnName="id" defaultValueComputed="nextval('public.&quot;category_id_seq&quot;'::regclass)"/>
+  </changeSet>
+  <changeSet id="create-sequence-operationtype_id_seq" author="aldane">
+    <createSequence sequenceName="operationtype_id_seq" startValue="1" incrementBy="1"/>
+  </changeSet>
+  <changeSet id="alter-sequence-operationtype_id_seq" author="aldane">
+    <addDefaultValue tableName="operation_type" columnName="id" defaultValueComputed="nextval('public.&quot;operationtype_id_seq&quot;'::regclass)"/>
+  </changeSet>
+  <changeSet id="create-sequence-role_id_seq" author="aldane">
+    <createSequence sequenceName="role_id_seq" startValue="1" incrementBy="1"/>
+  </changeSet>
+  <changeSet id="alter-sequence-role_id_seq" author="aldane">
+    <addDefaultValue tableName="role" columnName="id" defaultValueComputed="nextval('public.&quot;role_id_seq&quot;'::regclass)"/>
+  </changeSet>
+  <changeSet id="create-sequence-status_id_seq" author="aldane">
+    <createSequence sequenceName="status_id_seq" startValue="1" incrementBy="1"/>
+  </changeSet>
+  <changeSet id="alter-sequence-status_id_seq" author="aldane">
+    <addDefaultValue tableName="status" columnName="id" defaultValueComputed="nextval('public.&quot;status_id_seq&quot;'::regclass)"/>
+  </changeSet>
+  <changeSet id="create-sequence-store_id_seq" author="aldane">
+    <createSequence sequenceName="store_id_seq" startValue="1" incrementBy="1"/>
+  </changeSet>
+  <changeSet id="alter-sequence-store_id_seq" author="aldane">
+    <addDefaultValue tableName="store" columnName="id" defaultValueComputed="nextval('public.&quot;store_id_seq&quot;'::regclass)"/>
+  </changeSet>
+  <changeSet id="create-sequence-wallet_id_seq" author="aldane">
+    <createSequence sequenceName="wallet_id_seq" startValue="1" incrementBy="1"/>
+  </changeSet>
+  <changeSet id="alter-sequence-wallet_id_seq" author="aldane">
+    <addDefaultValue tableName="wallet" columnName="id" defaultValueComputed="nextval('public.&quot;wallet_id_seq&quot;'::regclass)"/>
+  </changeSet>
+</databaseChangeLog>

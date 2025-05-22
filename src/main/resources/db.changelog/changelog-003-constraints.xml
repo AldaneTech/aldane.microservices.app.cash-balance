@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+  <changeSet id="constraint-User_pkey" author="aldane">
+    <addPrimaryKey tableName="user" columnNames="id" constraintName="User_pkey"/>
+  </changeSet>
+  <changeSet id="constraint-accountentry_pkey" author="aldane">
+    <addPrimaryKey tableName="account_entry" columnNames="id" constraintName="accountentry_pkey"/>
+  </changeSet>
+  <changeSet id="constraint-brand_pkey" author="aldane">
+    <addPrimaryKey tableName="brand" columnNames="id" constraintName="brand_pkey"/>
+  </changeSet>
+  <changeSet id="constraint-category_pkey" author="aldane">
+    <addPrimaryKey tableName="category" columnNames="id" constraintName="category_pkey"/>
+  </changeSet>
+  <changeSet id="constraint-operationtype_pkey" author="aldane">
+    <addPrimaryKey tableName="operation_type" columnNames="id" constraintName="operationtype_pkey"/>
+  </changeSet>
+  <changeSet id="constraint-role_pkey" author="aldane">
+    <addPrimaryKey tableName="role" columnNames="id" constraintName="role_pkey"/>
+  </changeSet>
+  <changeSet id="constraint-status_pkey" author="aldane">
+    <addPrimaryKey tableName="status" columnNames="id" constraintName="status_pkey"/>
+  </changeSet>
+  <changeSet id="constraint-store_pkey" author="aldane">
+    <addPrimaryKey tableName="store" columnNames="id" constraintName="store_pkey"/>
+  </changeSet>
+  <changeSet id="constraint-wallet_pkey" author="aldane">
+    <addPrimaryKey tableName="wallet" columnNames="id" constraintName="wallet_pkey"/>
+  </changeSet>
+  <changeSet id="constraint-User_username_key" author="aldane">
+    <addUniqueConstraint tableName="user" columnNames="username" constraintName="User_username_key"/>
+  </changeSet>
+  <changeSet id="constraint-User_email_key" author="aldane">
+    <addUniqueConstraint tableName="user" columnNames="email" constraintName="User_email_key"/>
+  </changeSet>
+  <changeSet id="constraint-User_role_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="user" baseColumnNames="role_id" constraintName="User_role_id_fkey" referencedTableName="role" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-User_status_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="user" baseColumnNames="status_id" constraintName="User_status_id_fkey" referencedTableName="status" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-brand_status_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="brand" baseColumnNames="status_id" constraintName="brand_status_id_fkey" referencedTableName="status" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-brand_user_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="brand" baseColumnNames="user_id" constraintName="brand_user_id_fkey" referencedTableName="user" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-category_status_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="category" baseColumnNames="status_id" constraintName="category_status_id_fkey" referencedTableName="status" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-category_user_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="category" baseColumnNames="user_id" constraintName="category_user_id_fkey" referencedTableName="user" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-operationtype_status_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="operation_type" baseColumnNames="status_id" constraintName="operationtype_status_id_fkey" referencedTableName="status" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-role_status_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="role" baseColumnNames="status_id" constraintName="role_status_id_fkey" referencedTableName="status" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-store_status_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="store" baseColumnNames="status_id" constraintName="store_status_id_fkey" referencedTableName="status" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-store_user_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="store" baseColumnNames="user_id" constraintName="store_user_id_fkey" referencedTableName="user" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-wallet_status_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="wallet" baseColumnNames="status_id" constraintName="wallet_status_id_fkey" referencedTableName="status" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-wallet_user_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="wallet" baseColumnNames="user_id" constraintName="wallet_user_id_fkey" referencedTableName="user" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-accountentry_wallet_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="account_entry" baseColumnNames="wallet_id" constraintName="accountentry_wallet_id_fkey" referencedTableName="wallet" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-accountentry_category_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="account_entry" baseColumnNames="category_id" constraintName="accountentry_category_id_fkey" referencedTableName="category" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-accountentry_status_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="account_entry" baseColumnNames="status_id" constraintName="accountentry_status_id_fkey" referencedTableName="status" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-accountentry_brand_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="account_entry" baseColumnNames="brand_id" constraintName="accountentry_brand_id_fkey" referencedTableName="brand" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-accountentry_store_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="account_entry" baseColumnNames="store_id" constraintName="accountentry_store_id_fkey" referencedTableName="store" referencedColumnNames="id"/>
+  </changeSet>
+  <changeSet id="constraint-accountentry_type_operation_id_fkey" author="aldane">
+    <addForeignKeyConstraint baseTableName="account_entry" baseColumnNames="type_operation_id" constraintName="accountentry_type_operation_id_fkey" referencedTableName="operation_type" referencedColumnNames="id"/>
+  </changeSet>
+</databaseChangeLog>

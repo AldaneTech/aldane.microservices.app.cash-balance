@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ERROR">
+    <Appenders>
+        <Console name="LogToConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="net.aldane" level="${env:log.level.aldane}" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Logger name="org.springframework.boot" level="${env:log.level.spring}" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Logger name="org.hibernate" level="${env:log.level.hibernate}" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Logger name="net.aldane.cash_balance.repository" level="${env:log.level.aldane.repository}"
+                additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Root level="${env:log.level.root}">
+            <AppenderRef ref="LogToConsole"/>
+        </Root>
+    </Loggers>
+</Configuration>
