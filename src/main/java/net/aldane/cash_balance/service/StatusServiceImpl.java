@@ -2,7 +2,10 @@ package net.aldane.cash_balance.service;
 
 import net.aldane.cash_balance.mapper.StatusMapper;
 import net.aldane.cash_balance.repository.db.StatusDbRepository;
+import net.aldane.cash_balance.repository.db.entity.StatusDb;
 import net.aldane.cash_balance_api_server_java.model.Status;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ public class StatusServiceImpl implements StatusService {
 
     private final StatusDbRepository statusDbRepository;
     private final StatusMapper statusMapper;
+    private final Logger log = LogManager.getLogger(this.getClass());
 
     public StatusServiceImpl(StatusDbRepository statusDbRepository, StatusMapper statusMapper) {
         this.statusDbRepository = statusDbRepository;
@@ -23,12 +27,12 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Override
-    public List<Status> getStatus(List<String> statesIds) {
+    public List<Status> getStatus() {
         try {
             var statesList = statusDbRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
             return statusMapper.statusDbListToStatusList(statesList);
         } catch (Exception e) {
-            System.out.println("Error obtaining status");
+            log.error("Error when querying status in database");
             return new ArrayList<>();
         }
     }
@@ -39,7 +43,7 @@ public class StatusServiceImpl implements StatusService {
             var status = statusDbRepository.findById(statusId).orElse(null);
             return statusMapper.statusDbToStatus(status);
         } catch (Exception e) {
-            System.out.println("Error obtaining status with id: " + statusId);
+            log.error("Error obtaining status with id: {}", statusId);
             return null;
         }
     }
@@ -47,10 +51,16 @@ public class StatusServiceImpl implements StatusService {
     @Override
     public Status createStatus(Status status) {
         try {
-            var statusSaved = statusDbRepository.save(statusMapper.statusToStatusDb(status));
+            if(status.getName() == null || status.getName().trim().isBlank()){
+                log.info("Status name can't be empty");
+                return null;
+            }
+            StatusDb newStatus = new StatusDb();
+            newStatus.setName(status.getName());
+            var statusSaved = statusDbRepository.save(newStatus);
             return statusMapper.statusDbToStatus(statusSaved);
         } catch (Exception e) {
-            System.out.println("Error creating status");
+            log.error("Status name alredy exists");
             return null;
         }
     }
@@ -58,23 +68,30 @@ public class StatusServiceImpl implements StatusService {
     @Override
     public boolean deleteStatus(Long id) {
         try {
-            statusDbRepository.deleteById(id);
-            return true;
+            var statusDb = statusDbRepository.findById(id).orElse(null);
+            if(statusDb != null){
+                statusDbRepository.deleteById(id);
+                return true;
+            }
         } catch (Exception e) {
-            System.out.println("Error deleting status with id: " + id);
-            return false;
+            log.error("Error deleting status with id: {}", id);
         }
+        return false;
     }
 
     @Override
     public Status updateStatus(Status status) {
         try {
             var statusDb = statusDbRepository.findById(status.getId()).orElse(null);
-            statusDb.setName(status.getName());
-            return statusMapper.statusDbToStatus(statusDbRepository.save(statusDb));
+            if(statusDb != null){
+                if(status.getName() != null || !status.getName().trim().isBlank()){
+                    statusDb.setName(status.getName());
+                    return statusMapper.statusDbToStatus(statusDbRepository.save(statusDb));
+                }
+            }
         } catch (Exception e) {
-            System.out.println("Error updating status with id: " + status.getId());
-            return null;
+            log.error("Error updating status with id: {}", status.getId());
         }
+        return null;
     }
 }
