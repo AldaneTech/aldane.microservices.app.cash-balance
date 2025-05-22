@@ -45,6 +45,7 @@ public class StatusController implements StatusApi {
 
     @Override
     public ResponseEntity<Status> updateStatus(@Valid Status status) {
-        return statusService.updateStatus(status) != null ? ResponseEntity.ok(status) : ResponseEntity.badRequest().build();
+        var result = statusService.updateStatus(status);
+        return  result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }

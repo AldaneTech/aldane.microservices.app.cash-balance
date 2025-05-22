@@ -60,7 +60,7 @@ public class StatusServiceImpl implements StatusService {
             var statusSaved = statusDbRepository.save(newStatus);
             return statusMapper.statusDbToStatus(statusSaved);
         } catch (Exception e) {
-            log.error("Status name alredy exists");
+            log.error("Status name already exists");
             return null;
         }
     }
@@ -84,7 +84,7 @@ public class StatusServiceImpl implements StatusService {
         try {
             var statusDb = statusDbRepository.findById(status.getId()).orElse(null);
             if(statusDb != null){
-                if(status.getName() != null || !status.getName().trim().isBlank()){
+                if(status.getName() != null && !status.getName().trim().isBlank()){
                     statusDb.setName(status.getName());
                     return statusMapper.statusDbToStatus(statusDbRepository.save(statusDb));
                 }
