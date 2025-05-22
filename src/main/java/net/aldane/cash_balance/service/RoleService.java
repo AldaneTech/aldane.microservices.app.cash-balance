@@ -6,7 +6,7 @@ import net.aldane.cash_balance_api_server_java.model.Role;
 import java.util.List;
 
 public interface RoleService {
-    List<Role> getRoles(List<String> rolesIds);
+    List<Role> getRoles();
 
     Role getRoleById(Long roleId);
 
