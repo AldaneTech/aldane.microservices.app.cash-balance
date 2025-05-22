@@ -66,7 +66,7 @@ public class RoleServiceImpl implements RoleService {
             var roleSaved = roleDbRepository.save(newRole);
             return roleMapper.roleDbToRole(roleSaved);
         } catch (Exception e) {
-            log.error("Role name alredy exists");
+            log.error("Role name already exists");
             return null;
         }
     }
@@ -93,7 +93,9 @@ public class RoleServiceImpl implements RoleService {
         try {
             var roleDb = roleDbRepository.findById(role.getId()).orElse(null);
             if(roleDb != null){
-                roleDb.setName(role.getName());
+                if(role.getName() != null && !role.getName().trim().isBlank()){
+                    roleDb.setName(role.getName());
+                }
                 if(role.getComment() == null || role.getComment().trim().isBlank()){
                     roleDb.setComment(String.format("Updated by userId %d", authUtils.getUser().getId()));
                 } else {
