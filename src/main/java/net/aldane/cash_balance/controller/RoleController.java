@@ -39,12 +39,13 @@ public class RoleController implements RoleApi {
 
     @Override
     public ResponseEntity<List<Role>> getRoles() {
-        var states = roleService.getRoles(new ArrayList<>());
+        var states = roleService.getRoles();
         return ResponseEntity.ok(states);
     }
 
     @Override
     public ResponseEntity<Role> updateRole(@Valid Role role) {
-        return roleService.updateRole(role) != null ? ResponseEntity.ok(role) : ResponseEntity.badRequest().build();
+        var result = roleService.updateRole(role);
+        return  result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }
