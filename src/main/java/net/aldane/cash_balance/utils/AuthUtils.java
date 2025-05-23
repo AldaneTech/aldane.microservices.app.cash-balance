@@ -16,4 +16,17 @@ public class AuthUtils {
         }
         return null;
     }
+
+    public boolean userIsAdmin(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            var authorities = ((UserDetails) principal).getAuthorities();
+            for (var authority : authorities) {
+                if (authority.getAuthority().equals("ROLE_ADMIN")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

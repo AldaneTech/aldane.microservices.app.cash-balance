@@ -38,12 +38,13 @@ public class AccountEntryTypeController implements AccountEntryTypeApi {
 
     @Override
     public ResponseEntity<List<AccountEntryType>> getAccountEntryTypes() {
-        var states = accountEntryTypeService.getAccountEntryTypes(new ArrayList<>());
+        var states = accountEntryTypeService.getAccountEntryTypes();
         return ResponseEntity.ok(states);
     }
 
     @Override
     public ResponseEntity<AccountEntryType> updateAccountEntryType(@Valid AccountEntryType accountEntryType) {
-        return accountEntryTypeService.updateAccountEntryType(accountEntryType) != null ? ResponseEntity.ok(accountEntryType) : ResponseEntity.badRequest().build();
+        var result = accountEntryTypeService.updateAccountEntryType(accountEntryType);
+        return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }

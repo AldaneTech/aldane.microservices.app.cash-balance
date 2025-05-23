@@ -6,7 +6,7 @@ import net.aldane.cash_balance_api_server_java.model.AccountEntryType;
 import java.util.List;
 
 public interface AccountEntryTypeService {
-    List<AccountEntryType> getAccountEntryTypes(List<String> accountEntryTypesIds);
+    List<AccountEntryType> getAccountEntryTypes();
 
     AccountEntryType getAccountEntryTypeById(Long accountEntryTypeId);
 
