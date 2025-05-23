@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -38,10 +37,10 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
     public List<AccountEntryType> getAccountEntryTypes() {
         try {
             List<AccountEntryTypeDb> accountEntryTypesList;
-            if(authUtils.userIsAdmin()){
+            if (authUtils.isUserAdmin()) {
                 accountEntryTypesList = accountEntryTypeDbRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
 
-            }else {
+            } else {
                 accountEntryTypesList = accountEntryTypeDbRepository.findAllByStatus_OrderByIdAsc(statusUtils.getActiveStatus());
             }
             return accountEntryTypeMapper.accountEntryTypeDbListToAccountEntryTypeList(accountEntryTypesList);
@@ -55,10 +54,10 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
     public AccountEntryType getAccountEntryTypeById(Long accountEntryTypeId) {
         try {
             var accountEntryType = accountEntryTypeDbRepository.findById(accountEntryTypeId).orElse(null);
-            if(accountEntryType.getStatus().equals(statusUtils.getActiveStatus())){
+            if (accountEntryType.getStatus().equals(statusUtils.getActiveStatus())) {
                 return accountEntryTypeMapper.accountEntryTypeDbToAccountEntryType(accountEntryType);
             } else {
-                if(authUtils.userIsAdmin()){
+                if (authUtils.isUserAdmin()) {
                     return accountEntryTypeMapper.accountEntryTypeDbToAccountEntryType(accountEntryType);
                 }
             }
@@ -73,13 +72,13 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
     @Override
     public AccountEntryType createAccountEntryType(AccountEntryType accountEntryType) {
         try {
-            if(accountEntryType.getName() == null || accountEntryType.getName().trim().isBlank()){
+            if (accountEntryType.getName() == null || accountEntryType.getName().trim().isBlank()) {
                 log.info("AccountEntryType name can't be empty");
                 return null;
             }
             AccountEntryTypeDb newAccountEntryType = new AccountEntryTypeDb();
             newAccountEntryType.setName(accountEntryType.getName());
-            if (accountEntryType.getComment().trim().isBlank()) {
+            if (accountEntryType == null || accountEntryType.getComment().trim().isBlank()) {
                 newAccountEntryType.setComment(String.format("Created by userId %d", authUtils.getUser().getId()));
             } else {
                 newAccountEntryType.setComment(accountEntryType.getComment());
@@ -98,7 +97,7 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
     public boolean deleteAccountEntryType(Long id) {
         try {
             var accountEntryType = accountEntryTypeDbRepository.findById(id).orElse(null);
-            if(accountEntryType != null){
+            if (accountEntryType != null) {
                 accountEntryType.setStatus(statusUtils.getDeletedStatus());
                 accountEntryType.setComment(String.format("Deleted by userId %d", authUtils.getUser().getId()));
                 accountEntryType.setLastModification(OffsetDateTime.now().toLocalDateTime());
@@ -116,16 +115,16 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
     public AccountEntryType updateAccountEntryType(AccountEntryType accountEntryType) {
         try {
             var accountEntryTypeDb = accountEntryTypeDbRepository.findById(accountEntryType.getId()).orElse(null);
-            if(accountEntryTypeDb != null){
-                if(accountEntryType.getName() != null && !accountEntryType.getName().trim().isBlank()){
+            if (accountEntryTypeDb != null) {
+                if (accountEntryType.getName() != null && !accountEntryType.getName().trim().isBlank()) {
                     accountEntryTypeDb.setName(accountEntryType.getName());
                 }
-                if(accountEntryType.getComment() == null || accountEntryType.getComment().trim().isBlank()){
+                if (accountEntryType.getComment() == null || accountEntryType.getComment().trim().isBlank()) {
                     accountEntryTypeDb.setComment(String.format("Updated by userId %d", authUtils.getUser().getId()));
                 } else {
                     accountEntryTypeDb.setComment(accountEntryType.getComment());
                 }
-                if(accountEntryType.getStatus() != null && accountEntryType.getStatus().getId() != null){
+                if (accountEntryType.getStatus() != null && accountEntryType.getStatus().getId() != null) {
                     accountEntryTypeDb.setStatus(statusUtils.findStatusDb(accountEntryType.getStatus().getId()));
                 }
                 accountEntryTypeDb.setLastModification(OffsetDateTime.now().toLocalDateTime());

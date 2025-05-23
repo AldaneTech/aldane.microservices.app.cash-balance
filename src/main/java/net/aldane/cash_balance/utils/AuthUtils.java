@@ -17,7 +17,7 @@ public class AuthUtils {
         return null;
     }
 
-    public boolean userIsAdmin(){
+    public boolean isUserAdmin(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
             var authorities = ((UserDetails) principal).getAuthorities();
