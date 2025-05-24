@@ -4,9 +4,12 @@ import net.aldane.cash_balance.mapper.BrandMapper;
 import net.aldane.cash_balance.repository.db.BrandDbRepository;
 import net.aldane.cash_balance.repository.db.entity.BrandDb;
 import net.aldane.cash_balance.utils.AuthUtils;
+import net.aldane.cash_balance.utils.StatusUtils;
 import net.aldane.cash_balance_api_server_java.model.Brand;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -18,8 +21,11 @@ public class BrandServiceImpl implements BrandService {
 
     @Autowired
     private AuthUtils authUtils;
+    @Autowired
+    private StatusUtils statusUtils;
     private final BrandDbRepository brandDbRepository;
     private final BrandMapper brandMapper;
+    private final Logger log = LogManager.getLogger(this.getClass());
 
     public BrandServiceImpl(BrandDbRepository brandDbRepository, BrandMapper brandMapper) {
         this.brandDbRepository = brandDbRepository;
@@ -27,12 +33,17 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<Brand> getBrands(List<String> statesIds) {
+    public List<Brand> getBrands() {
         try {
-            var brandsList = brandDbRepository.findByUserIdOrderByNameAsc(authUtils.getUser().getId());
-            return brandMapper.brandDbListToBrandList(brandsList);
+            List<BrandDb> brandDbList;
+            if (authUtils.isUserAdmin()) {
+                brandDbList = brandDbRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+            } else {
+                brandDbList = brandDbRepository.findAllByStatusAndUserOrderByIdAsc(statusUtils.getActiveStatus(), authUtils.getUser());
+            }
+            return brandMapper.brandDbListToBrandList(brandDbList);
         } catch (Exception e) {
-            System.out.println("Error obtaining brands");
+            log.error("Error obtaining brands");
             return new ArrayList<>();
         }
     }
@@ -41,23 +52,40 @@ public class BrandServiceImpl implements BrandService {
     public Brand getBrandById(Long brandId) {
         try {
             var brand = brandDbRepository.findById(brandId).orElse(null);
-            return brandMapper.brandDbToBrand(brand);
+            if (brand != null) {
+                if (authUtils.isUserAdmin()) {
+                    return brandMapper.brandDbToBrand(brand);
+                } else {
+                    if (brand.getStatus().equals(statusUtils.getActiveStatus()) && brand.getUser().getId().equals(authUtils.getUser().getId())) {
+                        return brandMapper.brandDbToBrand(brand);
+                    } else {
+                        log.warn("Brand with id {} is not active or does not belong to the user", brandId);
+                    }
+                }
+            }
         } catch (Exception e) {
-            System.out.println("Error obtaining brand with id: " + brandId);
-            return null;
+            log.error("Error obtaining brand with id: {}", brandId);
         }
+        return null;
     }
 
     @Override
     public Brand createBrand(Brand brand) {
         try {
-            //brand.setLastModification(OffsetDateTime.now());
-            BrandDb brandDb = brandMapper.brandToBrandDb(brand);
+            if (brand.getName() == null || brand.getName().trim().isBlank()) {
+                log.info("Brand name can't be empty");
+                return null;
+            }
+            BrandDb brandDb = new BrandDb();
+            brandDb.setName(brand.getName());
+            brandDb.setComment(brand.getComment());
+            brandDb.setStatus(statusUtils.getActiveStatus());
+            brandDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
             brandDb.setUser(authUtils.getUser());
             var brandSaved = brandDbRepository.save(brandDb);
             return brandMapper.brandDbToBrand(brandSaved);
         } catch (Exception e) {
-            System.out.println("Error creating brand");
+            log.error("Error creating brand");
             return null;
         }
     }
@@ -65,12 +93,17 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public boolean deleteBrand(Long id) {
         try {
-            brandDbRepository.deleteById(id);
-            return true;
+            var brandDb = brandDbRepository.findById(id).orElse(null);
+            if (brandDb != null && (authUtils.isUserAdmin() || brandDb.getUser().getId().equals(authUtils.getUser().getId()))) {
+                brandDb.setStatus(statusUtils.getDeletedStatus());
+                brandDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                brandDbRepository.save(brandDb);
+                return true;
+            }
         } catch (Exception e) {
-            System.out.println("Error deleting brand with id: " + id);
-            return false;
+            log.error("Error deleting brand with id: {}", id);
         }
+        return false;
     }
 
     @Override

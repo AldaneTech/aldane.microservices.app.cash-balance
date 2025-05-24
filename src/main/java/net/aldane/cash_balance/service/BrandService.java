@@ -6,7 +6,7 @@ import net.aldane.cash_balance_api_server_java.model.Brand;
 import java.util.List;
 
 public interface BrandService {
-    List<Brand> getBrands(List<String> brandsIds);
+    List<Brand> getBrands();
 
     Brand getBrandById(Long brandId);
 
