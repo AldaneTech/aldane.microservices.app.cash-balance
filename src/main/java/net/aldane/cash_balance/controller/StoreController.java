@@ -7,7 +7,6 @@ import net.aldane.cash_balance_api_server_java.model.Store;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,6 +35,7 @@ public class StoreController implements StoreApi {
         var stores = storeService.getStoresByUserId(userId);
         return ResponseEntity.ok(stores);
     }
+
     @Override
     public ResponseEntity<Store> createStore(@Valid Store store) {
         var newStore = storeService.createStore(store);

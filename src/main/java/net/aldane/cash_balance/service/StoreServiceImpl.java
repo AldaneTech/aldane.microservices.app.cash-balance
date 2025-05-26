@@ -1,13 +1,10 @@
 package net.aldane.cash_balance.service;
 
 import net.aldane.cash_balance.mapper.StoreMapper;
-import net.aldane.cash_balance.repository.db.BrandDbRepository;
 import net.aldane.cash_balance.repository.db.StoreDbRepository;
-import net.aldane.cash_balance.repository.db.entity.BrandDb;
 import net.aldane.cash_balance.repository.db.entity.StoreDb;
 import net.aldane.cash_balance.utils.AuthUtils;
 import net.aldane.cash_balance.utils.StatusUtils;
-import net.aldane.cash_balance_api_server_java.model.Brand;
 import net.aldane.cash_balance_api_server_java.model.Store;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +26,7 @@ public class StoreServiceImpl implements StoreService {
     private final StoreDbRepository storeDbRepository;
     private final StoreMapper storeMapper;
     private final Logger log = LogManager.getLogger(this.getClass());
+
     public StoreServiceImpl(StoreDbRepository storeDbRepository, StoreMapper storeMapper) {
         this.storeDbRepository = storeDbRepository;
         this.storeMapper = storeMapper;
@@ -37,13 +35,13 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public List<Store> getStores() {
         try {
-            List<StoreDb> brandDbList;
+            List<StoreDb> storeDbList;
             if (authUtils.isUserAdmin()) {
-                brandDbList = storeDbRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+                storeDbList = storeDbRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
             } else {
-                brandDbList = storeDbRepository.findAllByStatusAndUserOrderByNameAsc(statusUtils.getActiveStatus(), authUtils.getUser());
+                storeDbList = storeDbRepository.findAllByStatusAndUserOrderByNameAsc(statusUtils.getActiveStatus(), authUtils.getUser());
             }
-            return storeMapper.storeDbListToStoreList(brandDbList);
+            return storeMapper.storeDbListToStoreList(storeDbList);
         } catch (Exception e) {
             log.error("Error obtaining stores");
             return new ArrayList<>();
@@ -53,13 +51,13 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public Store getStoreById(Long storeId) {
         try {
-            var brand = storeDbRepository.findById(storeId).orElse(null);
-            if (brand != null) {
+            var store = storeDbRepository.findById(storeId).orElse(null);
+            if (store != null) {
                 if (authUtils.isUserAdmin()) {
-                    return storeMapper.storeDbToStore(brand);
+                    return storeMapper.storeDbToStore(store);
                 } else {
-                    if (brand.getStatus().equals(statusUtils.getActiveStatus()) && brand.getUser().getId().equals(authUtils.getUser().getId())) {
-                        return storeMapper.storeDbToStore(brand);
+                    if (store.getStatus().equals(statusUtils.getActiveStatus()) && store.getUser().getId().equals(authUtils.getUser().getId())) {
+                        return storeMapper.storeDbToStore(store);
                     } else {
                         log.warn("Store with id {} is not active or does not belong to the user", storeId);
                     }
@@ -140,9 +138,9 @@ public class StoreServiceImpl implements StoreService {
     @Override
     public List<Store> getStoresByUserId(Long userId) {
         try {
-            if(authUtils.isUserAdmin()){
+            if (authUtils.isUserAdmin()) {
                 return storeMapper.storeDbListToStoreList(storeDbRepository.findByUserIdOrderByNameAsc(userId));
-            } else if(authUtils.getUser().getId().equals(userId)) {
+            } else if (authUtils.getUser().getId().equals(userId)) {
                 return storeMapper.storeDbListToStoreList(storeDbRepository.findAllByStatusAndUserOrderByNameAsc(statusUtils.getActiveStatus(), authUtils.getUser()));
             }
         } catch (Exception e) {
