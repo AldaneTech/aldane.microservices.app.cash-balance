@@ -6,7 +6,7 @@ import net.aldane.cash_balance_api_server_java.model.Category;
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> getCategories(List<String> categoriesIds);
+    List<Category> getCategories();
 
     Category getCategoryById(Long categoryId);
 
@@ -15,4 +15,7 @@ public interface CategoryService {
     boolean deleteCategory(Long id);
 
     Category updateCategory(Category category);
+
+    List<Category> getCategoriesByUserId(Long userId);
+
 }
