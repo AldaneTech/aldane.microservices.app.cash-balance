@@ -51,6 +51,7 @@ public class BrandController implements BrandApi {
 
     @Override
     public ResponseEntity<Brand> updateBrand(@Valid Brand brand) {
-        return brandService.updateBrand(brand) != null ? ResponseEntity.ok(brand) : ResponseEntity.badRequest().build();
+        var result = brandService.updateBrand(brand);
+        return  result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }

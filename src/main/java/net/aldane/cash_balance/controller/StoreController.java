@@ -20,6 +20,23 @@ public class StoreController implements StoreApi {
     }
 
     @Override
+    public ResponseEntity<List<Store>> getStores() {
+        var stores = storeService.getStores();
+        return ResponseEntity.ok(stores);
+    }
+
+    @Override
+    public ResponseEntity<Store> getStoreById(Long storeId) {
+        var store = storeService.getStoreById(storeId);
+        return store != null ? ResponseEntity.ok(store) : ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<List<Store>> getStoresByUserId(Long userId) {
+        var stores = storeService.getStoresByUserId(userId);
+        return ResponseEntity.ok(stores);
+    }
+    @Override
     public ResponseEntity<Store> createStore(@Valid Store store) {
         var newStore = storeService.createStore(store);
         return newStore != null ? ResponseEntity.ok(newStore) : ResponseEntity.badRequest().build();
@@ -32,24 +49,8 @@ public class StoreController implements StoreApi {
     }
 
     @Override
-    public ResponseEntity<Store> getStoreById(Long storeId) {
-        var store = storeService.getStoreById(storeId);
-        return store != null ? ResponseEntity.ok(store) : ResponseEntity.notFound().build();
-    }
-
-    @Override
-    public ResponseEntity<List<Store>> getStores() {
-        var states = storeService.getStores(new ArrayList<>());
-        return ResponseEntity.ok(states);
-    }
-
-    @Override
-    public ResponseEntity<List<Store>> getStoresByUserId(Long aLong) {
-        return null;
-    }
-
-    @Override
     public ResponseEntity<Store> updateStore(@Valid Store store) {
-        return storeService.updateStore(store) != null ? ResponseEntity.ok(store) : ResponseEntity.badRequest().build();
+        var result = storeService.updateStore(store);
+        return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }
