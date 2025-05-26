@@ -33,7 +33,7 @@ public class CategoryController implements CategoryApi {
 
     @Override
     public ResponseEntity<List<Category>> getCategoriesByUserId(Long userId) {
-        var categories = categoryService.getSCategoriesByUserId(userId);
+        var categories = categoryService.getCategoriesByUserId(userId);
         return ResponseEntity.ok(categories);
 
     }
