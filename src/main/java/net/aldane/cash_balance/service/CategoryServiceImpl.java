@@ -6,7 +6,6 @@ import net.aldane.cash_balance.repository.db.entity.CategoryDb;
 import net.aldane.cash_balance.utils.AuthUtils;
 import net.aldane.cash_balance.utils.StatusUtils;
 import net.aldane.cash_balance_api_server_java.model.Category;
-import net.aldane.cash_balance_api_server_java.model.Category;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

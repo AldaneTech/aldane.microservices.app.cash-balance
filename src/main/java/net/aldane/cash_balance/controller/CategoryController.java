@@ -7,7 +7,6 @@ import net.aldane.cash_balance_api_server_java.model.Category;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -37,6 +36,7 @@ public class CategoryController implements CategoryApi {
         return ResponseEntity.ok(categories);
 
     }
+
     @Override
     public ResponseEntity<Category> createCategory(@Valid Category category) {
         var newCategory = categoryService.createCategory(category);
@@ -48,9 +48,10 @@ public class CategoryController implements CategoryApi {
         var category = categoryService.deleteCategory(categoryId);
         return category ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
+
     @Override
     public ResponseEntity<Category> updateCategory(@Valid Category category) {
         var result = categoryService.updateCategory(category);
-        return result != null ? ResponseEntity.ok(category) : ResponseEntity.badRequest().build();
+        return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }
