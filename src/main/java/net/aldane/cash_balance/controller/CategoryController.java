@@ -20,6 +20,24 @@ public class CategoryController implements CategoryApi {
     }
 
     @Override
+    public ResponseEntity<List<Category>> getCategories() {
+        var categories = categoryService.getCategories();
+        return ResponseEntity.ok(categories);
+    }
+
+    @Override
+    public ResponseEntity<Category> getCategoryById(Long categoryId) {
+        var category = categoryService.getCategoryById(categoryId);
+        return category != null ? ResponseEntity.ok(category) : ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<List<Category>> getCategoriesByUserId(Long userId) {
+        var categories = categoryService.getSCategoriesByUserId(userId);
+        return ResponseEntity.ok(categories);
+
+    }
+    @Override
     public ResponseEntity<Category> createCategory(@Valid Category category) {
         var newCategory = categoryService.createCategory(category);
         return newCategory != null ? ResponseEntity.ok(newCategory) : ResponseEntity.badRequest().build();
@@ -30,26 +48,9 @@ public class CategoryController implements CategoryApi {
         var category = categoryService.deleteCategory(categoryId);
         return category ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
-
-    @Override
-    public ResponseEntity<Category> getCategoryById(Long categoryId) {
-        var category = categoryService.getCategoryById(categoryId);
-        return category != null ? ResponseEntity.ok(category) : ResponseEntity.notFound().build();
-    }
-
-    @Override
-    public ResponseEntity<List<Category>> getCategories() {
-        var states = categoryService.getCategories(new ArrayList<>());
-        return ResponseEntity.ok(states);
-    }
-
-    @Override
-    public ResponseEntity<List<Category>> getCategoriesByUserId(Long aLong) {
-        return null;
-    }
-
     @Override
     public ResponseEntity<Category> updateCategory(@Valid Category category) {
-        return categoryService.updateCategory(category) != null ? ResponseEntity.ok(category) : ResponseEntity.badRequest().build();
+        var result = categoryService.updateCategory(category);
+        return result != null ? ResponseEntity.ok(category) : ResponseEntity.badRequest().build();
     }
 }
