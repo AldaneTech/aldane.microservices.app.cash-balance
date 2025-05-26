@@ -79,7 +79,7 @@ public class BrandServiceImpl implements BrandService {
             BrandDb brandDb = new BrandDb();
             brandDb.setName(brand.getName());
 
-            if (brand.getComment() != null && !brand.getName().trim().isBlank()) {
+            if (brand.getComment() != null && !brand.getComment().trim().isBlank()) {
                 brandDb.setComment(brand.getComment());
             } else {
                 brandDb.setComment("");
