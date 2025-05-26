@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface BrandDbRepository extends JpaRepository<BrandDb, Long> {
     List<BrandDb> findByUserIdOrderByNameAsc(Long userId);
 
-    List<BrandDb> findAllByStatusAndUserOrderByIdAsc(StatusDb status, UserDb user);
+    List<BrandDb> findAllByStatusAndUserOrderByNameAsc(StatusDb status, UserDb user);
     Optional<BrandDb> findByIdAndStatusAndUser(Long id, StatusDb status, UserDb user);
 
 }

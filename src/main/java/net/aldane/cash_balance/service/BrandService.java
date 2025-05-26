@@ -15,4 +15,6 @@ public interface BrandService {
     boolean deleteBrand(Long id);
 
     Brand updateBrand(Brand brand);
+
+    List<Brand> getBrandsByUserId(Long userId);
 }

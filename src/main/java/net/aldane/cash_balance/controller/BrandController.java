@@ -14,11 +14,14 @@ import java.util.List;
 public class BrandController implements BrandApi {
 
     private final BrandService brandService;
+    public BrandController(BrandService brandService) {
+        this.brandService = brandService;
+    }
 
     @Override
     public ResponseEntity<List<Brand>> getBrands() {
-        var states = brandService.getBrands();
-        return ResponseEntity.ok(states);
+        var brands = brandService.getBrands();
+        return ResponseEntity.ok(brands);
     }
 
     @Override
@@ -28,12 +31,9 @@ public class BrandController implements BrandApi {
     }
 
     @Override
-    public ResponseEntity<List<Brand>> getBrandsByUserId(Long aLong) {
-        return null;
-    }
-
-    public BrandController(BrandService brandService) {
-        this.brandService = brandService;
+    public ResponseEntity<List<Brand>> getBrandsByUserId(Long userId) {
+        var brands = brandService.getBrandsByUserId(userId);
+        return ResponseEntity.ok(brands);
     }
 
     @Override

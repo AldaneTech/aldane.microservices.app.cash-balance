@@ -14,11 +14,11 @@ import java.util.List;
 
 @Mapper(uses = {UserMapper.class})
 public interface WalletMapper {
-
+    @Mapping(source = "lastModification", target = "lastModification", qualifiedByName = "localDateTimeToOffsetDateTime")
     Wallet walletDbToWallet(WalletDb walletDb);
     List<Wallet> walletDbListToWalletList(List<WalletDb> walletDb);
     @Mappings({
-            @Mapping(target = "lastModification", ignore = true),
+            @Mapping(source = "lastModification", target = "lastModification", qualifiedByName = "offsetDateTimeToLocalDateTime"),
             @Mapping(target = "user", ignore = true)  // MapStruct usará UserMapper automáticamente
     })    WalletDb walletToWalletDb(Wallet wallet);
 

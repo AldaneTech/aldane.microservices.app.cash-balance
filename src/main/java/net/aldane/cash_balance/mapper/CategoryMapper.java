@@ -13,11 +13,12 @@ import java.util.List;
 
 @Mapper
 public interface CategoryMapper {
+    @Mapping(source = "lastModification", target = "lastModification", qualifiedByName = "localDateTimeToOffsetDateTime")
     Category categoryDbToCategory(CategoryDb categoryDb);
 
     List<Category> categoryDbListToCategoryList(List<CategoryDb> categoryDb);
 
-    @Mapping(target = "lastModification", ignore = true)
+    @Mapping(source = "lastModification", target = "lastModification", qualifiedByName = "offsetDateTimeToLocalDateTime")
     CategoryDb categoryToCategoryDb(Category category);
 
     @Named("localDateTimeToOffsetDateTime")

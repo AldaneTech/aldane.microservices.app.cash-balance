@@ -13,11 +13,12 @@ import java.util.List;
 
 @Mapper
 public interface StoreMapper {
+    @Mapping(source = "lastModification", target = "lastModification", qualifiedByName = "localDateTimeToOffsetDateTime")
     Store storeDbToStore(StoreDb brandDb);
 
     List<Store> storeDbListToStoreList(List<StoreDb> brandDb);
 
-    @Mapping(target = "lastModification", ignore = true)
+    @Mapping(source = "lastModification", target = "lastModification", qualifiedByName = "offsetDateTimeToLocalDateTime")
     StoreDb storeToStoreDb(Store brand);
 
     @Named("localDateTimeToOffsetDateTime")

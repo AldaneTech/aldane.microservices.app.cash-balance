@@ -39,7 +39,7 @@ public class BrandServiceImpl implements BrandService {
             if (authUtils.isUserAdmin()) {
                 brandDbList = brandDbRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
             } else {
-                brandDbList = brandDbRepository.findAllByStatusAndUserOrderByIdAsc(statusUtils.getActiveStatus(), authUtils.getUser());
+                brandDbList = brandDbRepository.findAllByStatusAndUserOrderByNameAsc(statusUtils.getActiveStatus(), authUtils.getUser());
             }
             return brandMapper.brandDbListToBrandList(brandDbList);
         } catch (Exception e) {
@@ -78,7 +78,12 @@ public class BrandServiceImpl implements BrandService {
             }
             BrandDb brandDb = new BrandDb();
             brandDb.setName(brand.getName());
-            brandDb.setComment(brand.getComment());
+
+            if (brand.getComment() != null && !brand.getName().trim().isBlank()) {
+                brandDb.setComment(brand.getComment());
+            } else {
+                brandDb.setComment("");
+            }
             brandDb.setStatus(statusUtils.getActiveStatus());
             brandDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
             brandDb.setUser(authUtils.getUser());
@@ -109,14 +114,38 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Brand updateBrand(Brand brand) {
         try {
-            //brand.setLastModification(OffsetDateTime.now());
             var brandDb = brandDbRepository.findById(brand.getId()).orElse(null);
-            brandDb.setName(brand.getName());
-            brandDb.setComment(brand.getComment());
-            return brandMapper.brandDbToBrand(brandDbRepository.save(brandDb));
+            if (brandDb != null) {
+                if (!authUtils.isUserAdmin() && !brandDb.getUser().getId().equals(authUtils.getUser().getId())) {
+                    log.warn("User does not have permission to update this brand");
+                    return null;
+                }
+                brandDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                if (brand.getName() != null && !brand.getName().trim().isBlank()) {
+                    brandDb.setName(brand.getName());
+                }
+                if (brand.getComment() != null && !brand.getComment().trim().isBlank()) {
+                    brandDb.setComment(brand.getComment());
+                }
+                return brandMapper.brandDbToBrand(brandDbRepository.save(brandDb));
+            }
         } catch (Exception e) {
-            System.out.println("Error updating brand with id: " + brand.getId());
-            return null;
+            log.error("Error updating brand with id: {}", brand.getId());
         }
+        return null;
+    }
+
+    @Override
+    public List<Brand> getBrandsByUserId(Long userId) {
+        try {
+            if(authUtils.isUserAdmin()){
+                return brandMapper.brandDbListToBrandList(brandDbRepository.findByUserIdOrderByNameAsc(userId));
+            } else if(authUtils.getUser().getId().equals(userId)) {
+                return brandMapper.brandDbListToBrandList(brandDbRepository.findAllByStatusAndUserOrderByNameAsc(statusUtils.getActiveStatus(), authUtils.getUser()));
+            }
+        } catch (Exception e) {
+            log.error("Error obtaining brands for user with id: {}", userId);
+        }
+        return new ArrayList<>();
     }
 }
