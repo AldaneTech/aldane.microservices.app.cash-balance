@@ -45,7 +45,7 @@
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<log4j.version>2.24.3</log4j.version>
 		<spring-security-config.version>6.4.5</spring-security-config.version>
-		<cash-balance-api.version>1.1.0</cash-balance-api.version>
+		<cash-balance-api.version>1.2.0</cash-balance-api.version>
 	</properties>
 
 	<dependencies>

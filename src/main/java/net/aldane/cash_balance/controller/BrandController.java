@@ -14,9 +14,26 @@ import java.util.List;
 public class BrandController implements BrandApi {
 
     private final BrandService brandService;
-
     public BrandController(BrandService brandService) {
         this.brandService = brandService;
+    }
+
+    @Override
+    public ResponseEntity<List<Brand>> getBrands() {
+        var brands = brandService.getBrands();
+        return ResponseEntity.ok(brands);
+    }
+
+    @Override
+    public ResponseEntity<Brand> getBrandById(Long brandId) {
+        var brand = brandService.getBrandById(brandId);
+        return brand != null ? ResponseEntity.ok(brand) : ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<List<Brand>> getBrandsByUserId(Long userId) {
+        var brands = brandService.getBrandsByUserId(userId);
+        return ResponseEntity.ok(brands);
     }
 
     @Override
@@ -31,22 +48,6 @@ public class BrandController implements BrandApi {
         return brand ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @Override
-    public ResponseEntity<Brand> getBrandById(Long brandId) {
-        var brand = brandService.getBrandById(brandId);
-        return brand != null ? ResponseEntity.ok(brand) : ResponseEntity.notFound().build();
-    }
-
-    @Override
-    public ResponseEntity<List<Brand>> getBrands() {
-        var states = brandService.getBrands(new ArrayList<>());
-        return ResponseEntity.ok(states);
-    }
-
-    @Override
-    public ResponseEntity<List<Brand>> getBrandsByUserId(Long aLong) {
-        return null;
-    }
 
     @Override
     public ResponseEntity<Brand> updateBrand(@Valid Brand brand) {
