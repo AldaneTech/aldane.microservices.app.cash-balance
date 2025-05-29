@@ -2,7 +2,6 @@ package net.aldane.cash_balance.service;
 
 import net.aldane.cash_balance.mapper.WalletMapper;
 import net.aldane.cash_balance.repository.db.WalletDbRepository;
-import net.aldane.cash_balance.repository.db.entity.StoreDb;
 import net.aldane.cash_balance.repository.db.entity.WalletDb;
 import net.aldane.cash_balance.utils.AuthUtils;
 import net.aldane.cash_balance.utils.StatusUtils;
@@ -11,8 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
