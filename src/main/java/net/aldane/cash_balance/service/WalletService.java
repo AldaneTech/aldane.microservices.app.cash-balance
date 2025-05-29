@@ -6,7 +6,7 @@ import net.aldane.cash_balance_api_server_java.model.Wallet;
 import java.util.List;
 
 public interface WalletService {
-    List<Wallet> getWallets(List<String> walletsIds);
+    List<Wallet> getWallets();
 
     Wallet getWalletById(Long walletId);
 

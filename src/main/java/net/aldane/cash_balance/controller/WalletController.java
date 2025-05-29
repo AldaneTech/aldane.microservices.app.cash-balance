@@ -7,7 +7,6 @@ import net.aldane.cash_balance_api_server_java.model.Wallet;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,15 +18,9 @@ public class WalletController implements WalletApi {
     }
 
     @Override
-    public ResponseEntity<Wallet> createWallet(@Valid Wallet wallet) {
-        var newWallet = walletService.createWallet(wallet);
-        return newWallet != null ? ResponseEntity.ok(newWallet) : ResponseEntity.badRequest().build();
-    }
-
-    @Override
-    public ResponseEntity<Void> deleteWallet(Long walletId) {
-        var wallet = walletService.deleteWallet(walletId);
-        return wallet ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    public ResponseEntity<List<Wallet>> getWallets() {
+        var wallets = walletService.getWallets();
+        return ResponseEntity.ok(wallets);
     }
 
     @Override
@@ -43,13 +36,20 @@ public class WalletController implements WalletApi {
     }
 
     @Override
-    public ResponseEntity<List<Wallet>> getWallets() {
-        var states = walletService.getWallets(new ArrayList<>());
-        return ResponseEntity.ok(states);
+    public ResponseEntity<Wallet> createWallet(@Valid Wallet wallet) {
+        var newWallet = walletService.createWallet(wallet);
+        return newWallet != null ? ResponseEntity.ok(newWallet) : ResponseEntity.badRequest().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteWallet(Long walletId) {
+        var wallet = walletService.deleteWallet(walletId);
+        return wallet ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
     @Override
     public ResponseEntity<Wallet> updateWallet(@Valid Wallet wallet) {
-        return walletService.updateWallet(wallet) != null ? ResponseEntity.ok(wallet) : ResponseEntity.badRequest().build();
+        var result = walletService.updateWallet(wallet);
+        return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }
