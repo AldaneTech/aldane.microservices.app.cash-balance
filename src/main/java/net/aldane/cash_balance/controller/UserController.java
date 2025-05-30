@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,16 +23,9 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<User> createUser(@Valid User user) {
-        var newUser = userService.createUser(user);
-        return newUser != null ? ResponseEntity.ok(newUser) : ResponseEntity.badRequest().build();
-    }
-
-    @Override
-    @PreAuthorize("@authValidator.isOwnerOrAdmin(#userId)")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        var user = userService.deleteUser(userId);
-        return user ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    public ResponseEntity<List<User>> getUsers() {
+        var users = userService.getUsers();
+        return ResponseEntity.ok(users);
     }
 
     @Override
@@ -55,13 +47,21 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<List<User>> getUsers() {
-        var states = userService.getUsers(new ArrayList<>());
-        return ResponseEntity.ok(states);
+    public ResponseEntity<User> createUser(@Valid User user) {
+        var newUser = userService.createUser(user);
+        return newUser != null ? ResponseEntity.ok(newUser) : ResponseEntity.badRequest().build();
+    }
+
+    @Override
+    @PreAuthorize("@authValidator.isOwnerOrAdmin(#userId)")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        var user = userService.deleteUser(userId);
+        return user ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
     @Override
     public ResponseEntity<User> updateUser(@Valid User user) {
-        return userService.updateUser(user) != null ? ResponseEntity.ok(user) : ResponseEntity.badRequest().build();
+        var result = userService.updateUser(user);
+        return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }
