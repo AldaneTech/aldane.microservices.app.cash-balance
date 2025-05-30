@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface UserService {
 
-    List<User> getUsers(List<String> userIds);
+    List<User> getUsers();
 
     User getUserById(Long userId);
 
