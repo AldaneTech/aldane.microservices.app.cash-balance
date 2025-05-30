@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -77,7 +78,7 @@ public class UserServiceImpl implements UserService {
                 userDbList = userDbRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
             } else {
                 var user = getUserById(authUtils.getUser().getId());
-                return user != null ? (List<User>) user : new ArrayList<>();
+                return user != null ? Collections.singletonList(user) : new ArrayList<>();
             }
             return userMapper.userDbListToUserList(userDbList);
         } catch (Exception e) {
@@ -200,10 +201,10 @@ public class UserServiceImpl implements UserService {
                     userDb.setUsername(user.getUsername());
                 }
                 if (user.getPassword() != null && !user.getPassword().trim().isBlank()) {
-                    userDb.setPassword(user.getPassword());
+                    userDb.setPassword(passwordEncoder.encode(user.getPassword()));
                 }
                 if (user.getEmail() != null && !user.getEmail().trim().isBlank()) {
-                    userDb.setPassword(user.getEmail());
+                    userDb.setEmail(user.getEmail());
                 }
 
                 return userMapper.userDbToUser(userDbRepository.save(userDb));
