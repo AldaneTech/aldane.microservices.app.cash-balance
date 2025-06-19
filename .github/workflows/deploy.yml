@@ -32,7 +32,9 @@ jobs:
 
       - run: docker push ghcr.io/aldanetech/aldane.microservices.app.cash-balance:latest
 
-      - run: echo "${{ secrets.KUBECONFIG_PROD }}" > kubeconfig.yaml
+      - name: Write kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG_PROD }}" | base64 -d > kubeconfig.yaml
 
       - env:
           KUBECONFIG: ${{ github.workspace }}/kubeconfig.yaml
