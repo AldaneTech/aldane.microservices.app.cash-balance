@@ -7,7 +7,6 @@ import net.aldane.cash_balance_api_server_java.model.AccountEntry;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,6 +15,24 @@ public class AccountEntryController implements AccountEntryApi {
 
     public AccountEntryController(AccountEntryService accountEntryService) {
         this.accountEntryService = accountEntryService;
+    }
+
+    @Override
+    public ResponseEntity<List<AccountEntry>> getAccountEntries() {
+        var accountEntries = accountEntryService.getAccountEntries();
+        return ResponseEntity.ok(accountEntries);
+    }
+
+    @Override
+    public ResponseEntity<AccountEntry> getAccountEntryById(Long accountEntryId) {
+        var accountEntry = accountEntryService.getAccountEntryById(accountEntryId);
+        return accountEntry != null ? ResponseEntity.ok(accountEntry) : ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<List<AccountEntry>> getAccountEntryByWalletId(Long walletId) {
+        var accountEntry = accountEntryService.getAccountEntriesByWalletId(walletId);
+        return ResponseEntity.ok(accountEntry);
     }
 
     @Override
@@ -31,25 +48,8 @@ public class AccountEntryController implements AccountEntryApi {
     }
 
     @Override
-    public ResponseEntity<AccountEntry> getAccountEntryById(Long accountEntryId) {
-        var accountEntry = accountEntryService.getAccountEntryById(accountEntryId);
-        return accountEntry != null ? ResponseEntity.ok(accountEntry) : ResponseEntity.notFound().build();
-    }
-
-    @Override
-    public ResponseEntity<List<AccountEntry>> getAccountEntryByWalletId(Long walletId) {
-        var states = accountEntryService.getAccountEntryByWalletId(walletId);
-        return ResponseEntity.ok(states);
-    }
-
-    @Override
-    public ResponseEntity<List<AccountEntry>> getAccountEntries() {
-        var states = accountEntryService.getAccountEntries(new ArrayList<>());
-        return ResponseEntity.ok(states);
-    }
-
-    @Override
     public ResponseEntity<AccountEntry> updateAccountEntry(@Valid AccountEntry accountEntry) {
-        return accountEntryService.updateAccountEntry(accountEntry) != null ? ResponseEntity.ok(accountEntry) : ResponseEntity.badRequest().build();
+        var result = accountEntryService.updateAccountEntry(accountEntry);
+        return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }

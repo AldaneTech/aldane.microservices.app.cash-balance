@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface AccountEntryService {
 
-    List<AccountEntry> getAccountEntries(List<String> accountEntrysIds);
+    List<AccountEntry> getAccountEntries();
 
     AccountEntry getAccountEntryById(Long accountEntryId);
 
@@ -17,5 +17,5 @@ public interface AccountEntryService {
 
     AccountEntry updateAccountEntry(AccountEntry accountEntry);
 
-    List<AccountEntry> getAccountEntryByWalletId(Long walletId);
+    List<AccountEntry> getAccountEntriesByWalletId(Long walletId);
 }
