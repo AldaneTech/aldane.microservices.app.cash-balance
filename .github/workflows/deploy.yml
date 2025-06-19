@@ -28,9 +28,9 @@ jobs:
 
       - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - run: docker build -t ghcr.io/${{ github.repository }}:latest .
+      - run: docker build -t ghcr.io/aldanetech/aldane.microservices.app.cash-balance:latest .
 
-      - run: docker push ghcr.io/${{ github.repository }}:latest
+      - run: docker push ghcr.io/aldanetech/aldane.microservices.app.cash-balance:latest
 
       - run: echo "${{ secrets.KUBECONFIG_PROD }}" > kubeconfig.yaml
 

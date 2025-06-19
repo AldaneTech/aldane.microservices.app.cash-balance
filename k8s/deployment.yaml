@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: cash-balance
-          image: ghcr.io/aldanetech/microservicio-contabilidad:latest
+          image: ghcr.io/aldanetech/aldane.microservices.app.cash-balance:latest
           ports:
             - containerPort: 8080
           env:
