@@ -36,6 +36,11 @@ jobs:
         run: |
           echo "${{ secrets.KUBECONFIG_PROD }}" | base64 -d > kubeconfig.yaml
 
+      - name: Verificar kubeconfig
+        run: |
+          echo "Contenido del kubeconfig:"
+          head -n 7 kubeconfig.yaml || echo "Archivo vacío"
+
       - env:
           KUBECONFIG: ${{ github.workspace }}/kubeconfig.yaml
         run: kubectl apply -f k8s/deployment.yaml
