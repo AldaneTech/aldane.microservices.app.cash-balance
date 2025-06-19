@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cash-balance
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cash-balance
+  template:
+    metadata:
+      labels:
+        app: cash-balance
+    spec:
+      containers:
+        - name: cash-balance
+          image: ghcr.io/aldanetech/microservicio-contabilidad:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: cash-balance-secret
+                  key: SERVER_PORT
+            - name: JDBC_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: cash-balance-secret
+                  key: JDBC_HOST
+            - name: JDBC_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: cash-balance-secret
+                  key: JDBC_DATABASE
+            - name: JDBC_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cash-balance-secret
+                  key: JDBC_USER
+            - name: JDBC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cash-balance-secret
+                  key: JDBC_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cash-balance-secret
+                  key: JWT_SECRET
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cash-balance-service
+spec:
+  selector:
+    app: cash-balance
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: NodePort
