@@ -12,7 +12,5 @@ public interface UserDbRepository extends JpaRepository<UserDb, Long> {
     UserDb findByUsername(String username);
 
     UserDb findByEmail(String email);
-
-    List<UserDb> findAllByStatusAndUserOrderByNameAsc(StatusDb status, UserDb user);
 }
 
