@@ -11,6 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface WalletDbRepository extends JpaRepository<WalletDb, Long> {
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("select w from WalletDb w where w.id = :id")
+    Optional<WalletDb> findByIdForUpdate(@org.springframework.data.repository.query.Param("id") Long id);
     List<WalletDb> findByUserId(Long userId);
 
     List<WalletDb> findByUserIdOrderByNameAsc(Long userId);

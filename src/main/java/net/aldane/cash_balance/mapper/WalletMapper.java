@@ -14,10 +14,12 @@ import java.util.List;
 
 @Mapper(uses = {UserMapper.class})
 public interface WalletMapper {
+    @Mapping(source = "creation_date", target = "creationDate", qualifiedByName = "localDateTimeToOffsetDateTime")
     @Mapping(source = "lastModification", target = "lastModification", qualifiedByName = "localDateTimeToOffsetDateTime")
     Wallet walletDbToWallet(WalletDb walletDb);
     List<Wallet> walletDbListToWalletList(List<WalletDb> walletDb);
     @Mappings({
+            @Mapping(source = "creationDate", target = "creation_date", qualifiedByName = "offsetDateTimeToLocalDateTime"),
             @Mapping(source = "lastModification", target = "lastModification", qualifiedByName = "offsetDateTimeToLocalDateTime"),
             @Mapping(target = "user", ignore = true)  // MapStruct usará UserMapper automáticamente
     })    WalletDb walletToWalletDb(Wallet wallet);
@@ -29,6 +31,6 @@ public interface WalletMapper {
 
     @Named("offsetDateTimeToLocalDateTime")
     default LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
-        return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
+        return offsetDateTime != null ? offsetDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime() : null;
     }
 }

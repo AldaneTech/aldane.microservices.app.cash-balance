@@ -2,9 +2,11 @@ package net.aldane.cash_balance.repository.db.entity;
 
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@org.hibernate.annotations.DynamicUpdate
 @Table(name = "wallet")
 public class WalletDb {
 
@@ -13,8 +15,8 @@ public class WalletDb {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "budget")
-    private Float budget;
+    @Column(name = "budget", nullable = false, precision = 18, scale = 2)
+    private BigDecimal budget;
     @Column(name = "comment")
     private String comment;
 
@@ -34,11 +36,11 @@ public class WalletDb {
     @Column(name = "creation_date")
     private LocalDateTime creation_date;
 
-    public Float getBudget() {
+    public BigDecimal getBudget() {
         return budget;
     }
 
-    public void setBudget(Float budget) {
+    public void setBudget(BigDecimal budget) {
         this.budget = budget;
     }
 

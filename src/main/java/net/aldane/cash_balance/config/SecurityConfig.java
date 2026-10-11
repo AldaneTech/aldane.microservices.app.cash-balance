@@ -32,11 +32,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return  http.csrf(AbstractHttpConfigurer::disable)
+                .cors(org.springframework.security.config.Customizer.withDefaults())
+                .exceptionHandling(errors -> errors.authenticationEntryPoint((request, response, exception) -> response.sendError(401)))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth)->
-                        auth.requestMatchers(HttpMethod.POST,"/login").permitAll()
+                        auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
+                                .requestMatchers(HttpMethod.POST,"/login").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/createUser").permitAll()
-                                .requestMatchers("/login", "/createUser", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )

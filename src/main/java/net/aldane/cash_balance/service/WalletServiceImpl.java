@@ -18,6 +18,8 @@ import java.util.List;
 
 @Service
 public class WalletServiceImpl implements WalletService {
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
     @Autowired
     private AuthUtils authUtils;
     @Autowired
@@ -92,14 +94,14 @@ public class WalletServiceImpl implements WalletService {
             }
             WalletDb walletDb = new WalletDb();
             walletDb.setName(wallet.getName());
-            walletDb.setBudget(0F);
+            walletDb.setBudget(java.math.BigDecimal.ZERO.setScale(2));
             if (wallet.getComment() != null && !wallet.getComment().trim().isBlank()) {
                 walletDb.setComment(wallet.getComment());
             } else {
                 walletDb.setComment("");
             }
-            walletDb.setCreation_date(OffsetDateTime.now().toLocalDateTime());
-            walletDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+            walletDb.setCreation_date(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
+            walletDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
             walletDb.setStatus(statusUtils.getActiveStatus());
             walletDb.setUser(authUtils.getUser());
             var walletSaved = walletDbRepository.save(walletDb);
@@ -111,12 +113,14 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public boolean deleteWallet(Long id) {
         try {
-            var walletDb = walletDbRepository.findById(id).orElse(null);
+            var walletDb = walletDbRepository.findByIdForUpdate(id).orElse(null);
+            if (walletDb != null) entityManager.refresh(walletDb);
             if (walletDb != null && (authUtils.isUserAdmin() || walletDb.getUser().getId().equals(authUtils.getUser().getId()))) {
                 walletDb.setStatus(statusUtils.getDeletedStatus());
-                walletDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                walletDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 walletDbRepository.save(walletDb);
                 return true;
             }
@@ -127,15 +131,17 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public Wallet updateWallet(Wallet wallet) {
         try {
-            var walletDb = walletDbRepository.findById(wallet.getId()).orElse(null);
+            var walletDb = walletDbRepository.findByIdForUpdate(wallet.getId()).orElse(null);
+            if (walletDb != null) entityManager.refresh(walletDb);
             if (walletDb != null) {
                 if (!authUtils.isUserAdmin() && !walletDb.getUser().getId().equals(authUtils.getUser().getId())) {
                     log.warn("User does not have permission to update this brand");
                     return null;
                 }
-                walletDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                walletDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 if (wallet.getName() != null && !wallet.getName().trim().isBlank()) {
                     walletDb.setName(wallet.getName());
                 }

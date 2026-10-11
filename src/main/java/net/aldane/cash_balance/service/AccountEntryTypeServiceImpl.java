@@ -54,6 +54,7 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
     public AccountEntryType getAccountEntryTypeById(Long accountEntryTypeId) {
         try {
             var accountEntryType = accountEntryTypeDbRepository.findById(accountEntryTypeId).orElse(null);
+            if (accountEntryType == null) return null;
             if (accountEntryType.getStatus().equals(statusUtils.getActiveStatus())) {
                 return accountEntryTypeMapper.accountEntryTypeDbToAccountEntryType(accountEntryType);
             } else {
@@ -70,6 +71,7 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public AccountEntryType createAccountEntryType(AccountEntryType accountEntryType) {
         try {
             if (accountEntryType.getName() == null || accountEntryType.getName().trim().isBlank()) {
@@ -78,13 +80,13 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
             }
             AccountEntryTypeDb newAccountEntryType = new AccountEntryTypeDb();
             newAccountEntryType.setName(accountEntryType.getName());
-            if (accountEntryType == null || accountEntryType.getComment().trim().isBlank()) {
+            if (accountEntryType.getComment() == null || accountEntryType.getComment().trim().isBlank()) {
                 newAccountEntryType.setComment(String.format("Created by userId %d", authUtils.getUser().getId()));
             } else {
                 newAccountEntryType.setComment(accountEntryType.getComment());
             }
             newAccountEntryType.setStatus(statusUtils.getActiveStatus());
-            newAccountEntryType.setLastModification(OffsetDateTime.now().toLocalDateTime());
+            newAccountEntryType.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
             var accountEntryTypeSaved = accountEntryTypeDbRepository.save(newAccountEntryType);
             return accountEntryTypeMapper.accountEntryTypeDbToAccountEntryType(accountEntryTypeSaved);
         } catch (Exception e) {
@@ -94,13 +96,14 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public boolean deleteAccountEntryType(Long id) {
         try {
             var accountEntryType = accountEntryTypeDbRepository.findById(id).orElse(null);
             if (accountEntryType != null) {
                 accountEntryType.setStatus(statusUtils.getDeletedStatus());
                 accountEntryType.setComment(String.format("Deleted by userId %d", authUtils.getUser().getId()));
-                accountEntryType.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                accountEntryType.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 accountEntryTypeDbRepository.save(accountEntryType);
                 return true;
             }
@@ -112,6 +115,7 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public AccountEntryType updateAccountEntryType(AccountEntryType accountEntryType) {
         try {
             var accountEntryTypeDb = accountEntryTypeDbRepository.findById(accountEntryType.getId()).orElse(null);
@@ -127,7 +131,7 @@ public class AccountEntryTypeServiceImpl implements AccountEntryTypeService {
                 if (accountEntryType.getStatus() != null && accountEntryType.getStatus().getId() != null) {
                     accountEntryTypeDb.setStatus(statusUtils.findStatusDb(accountEntryType.getStatus().getId()));
                 }
-                accountEntryTypeDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                accountEntryTypeDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 return accountEntryTypeMapper.accountEntryTypeDbToAccountEntryType(accountEntryTypeDbRepository.save(accountEntryTypeDb));
             }
         } catch (Exception e) {

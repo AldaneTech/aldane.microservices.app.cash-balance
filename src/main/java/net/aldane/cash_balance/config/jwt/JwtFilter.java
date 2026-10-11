@@ -28,23 +28,12 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-/*
-        String path = request.getServletPath(); // 🔥 sin context-path
-        if (path.startsWith("/swagger-ui") ||
-                path.equals("/swagger-ui.html") ||
-                path.startsWith("/v3/api-docs") ||
-                path.startsWith("/login") ||
-                path.startsWith("/createUser") ||
-                path.startsWith("/swagger-resources") ||
-                path.startsWith("/webjars")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-*/
+
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
 
+        try {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
             username = jwtUtil.getUsernameFromToken(jwt);
@@ -58,7 +47,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-
+        } catch (io.jsonwebtoken.JwtException | IllegalArgumentException | org.springframework.security.core.AuthenticationException e) {
+            SecurityContextHolder.clearContext();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
         filterChain.doFilter(request, response);
     }
 }

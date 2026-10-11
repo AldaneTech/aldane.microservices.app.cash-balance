@@ -28,6 +28,6 @@ public interface AccountEntryTypeMapper {
 
     @Named("offsetDateTimeToLocalDateTime")
     default LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
-        return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
+        return offsetDateTime != null ? offsetDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime() : null;
     }
 }

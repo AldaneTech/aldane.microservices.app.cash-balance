@@ -54,7 +54,9 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     @Override
     public boolean isEnabled() {
-        return getUser().getStatus().getId() == 1;
+        return user.getStatus() != null && Long.valueOf(1L).equals(user.getStatus().getId())
+                && user.getRole() != null && user.getRole().getStatus() != null
+                && Long.valueOf(1L).equals(user.getRole().getStatus().getId());
     }
 
 

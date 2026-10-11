@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
-@Mapper
+@Mapper(uses = UserMapper.class)
 public interface BrandMapper {
     @Mapping(source = "lastModification", target = "lastModification", qualifiedByName = "localDateTimeToOffsetDateTime")
     Brand brandDbToBrand(BrandDb brandDb);
@@ -28,6 +28,6 @@ public interface BrandMapper {
 
     @Named("offsetDateTimeToLocalDateTime")
     default LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
-        return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
+        return offsetDateTime != null ? offsetDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime() : null;
     }
 }

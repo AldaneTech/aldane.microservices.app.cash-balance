@@ -85,7 +85,7 @@ public class BrandServiceImpl implements BrandService {
                 brandDb.setComment("");
             }
             brandDb.setStatus(statusUtils.getActiveStatus());
-            brandDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+            brandDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
             brandDb.setUser(authUtils.getUser());
             var brandSaved = brandDbRepository.save(brandDb);
             return brandMapper.brandDbToBrand(brandSaved);
@@ -101,7 +101,7 @@ public class BrandServiceImpl implements BrandService {
             var brandDb = brandDbRepository.findById(id).orElse(null);
             if (brandDb != null && (authUtils.isUserAdmin() || brandDb.getUser().getId().equals(authUtils.getUser().getId()))) {
                 brandDb.setStatus(statusUtils.getDeletedStatus());
-                brandDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                brandDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 brandDbRepository.save(brandDb);
                 return true;
             }
@@ -120,7 +120,7 @@ public class BrandServiceImpl implements BrandService {
                     log.warn("User does not have permission to update this brand");
                     return null;
                 }
-                brandDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                brandDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 if (brand.getName() != null && !brand.getName().trim().isBlank()) {
                     brandDb.setName(brand.getName());
                 }

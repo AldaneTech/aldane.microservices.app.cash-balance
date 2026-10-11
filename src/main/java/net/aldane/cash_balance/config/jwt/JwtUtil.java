@@ -23,7 +23,16 @@ public class JwtUtil {
     }
 
     public String generateToken(String username) {
+        return generateToken(username, null);
+    }
+
+    public String generateToken(net.aldane.cash_balance.security.model.UserDetails user) {
+        return generateToken(user.getUsername(), user.getUser().getId());
+    }
+
+    private String generateToken(String username, Long userId) {
         return Jwts.builder()
+                .claim("uid", userId)
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // Expira en 10 horas
@@ -33,16 +42,25 @@ public class JwtUtil {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        if (userDetails instanceof net.aldane.cash_balance.security.model.UserDetails user) {
+            var id = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody().get("uid", Long.class);
+            if (!user.getUser().getId().equals(id)) return false;
+        }
+        return (username != null && username.equals(userDetails.getUsername()) && !isTokenExpired(token)
+                && userDetails.isEnabled() && userDetails.isAccountNonLocked()
+                && userDetails.isAccountNonExpired() && userDetails.isCredentialsNonExpired());
     }
 
     public String getUsernameFromToken(String token) {
-        return Jwts.parser()
+        var claims = Jwts.parser()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+        if (claims.getSubject() == null || claims.getSubject().isBlank() || claims.getExpiration() == null) {
+            throw new io.jsonwebtoken.MalformedJwtException("Missing required claims");
+        }
+        return claims.getSubject();
     }
     private boolean isTokenExpired(String token) {
         return Jwts.parser()

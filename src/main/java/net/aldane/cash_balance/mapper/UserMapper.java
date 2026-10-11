@@ -13,6 +13,7 @@ import java.util.List;
 
 @Mapper
 public interface UserMapper {
+    @Mapping(target = "password", ignore = true)
     @Mapping(source = "recordDate", target = "recordDate", qualifiedByName = "localDateTimeToOffsetDateTimeUser")
     User userDbToUser(UserDb userDb);
 
@@ -29,7 +30,7 @@ public interface UserMapper {
 
     @Named("offsetDateTimeToLocalDateTimeUser")
     default LocalDateTime offsetDateTimeToLocalDateTimeUser(OffsetDateTime offsetDateTime) {
-        return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
+        return offsetDateTime != null ? offsetDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime() : null;
     }
 }
 

@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
                     return userMapper.userDbToUser(user);
                 } else {
                     if (user.getStatus().equals(statusUtils.getActiveStatus()) && userId.equals(authUtils.getUser().getId())) {
-                        user.setLastAccess(OffsetDateTime.now().toLocalDateTime());
+                        user.setLastAccess(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                         try {
                             userDbRepository.save(user);
                         } catch (DataIntegrityViolationException e) {
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
                     return userMapper.userDbToUser(user);
                 } else {
                     if (user.getStatus().equals(statusUtils.getActiveStatus()) && username.equals(authUtils.getUser().getUsername())) {
-                        user.setLastAccess(OffsetDateTime.now().toLocalDateTime());
+                        user.setLastAccess(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                         try {
                             userDbRepository.save(user);
                         } catch (DataIntegrityViolationException e) {
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
                     return userMapper.userDbToUser(user);
                 } else {
                     if (user.getStatus().equals(statusUtils.getActiveStatus()) && email.equals(authUtils.getUser().getEmail())) {
-                        user.setLastAccess(OffsetDateTime.now().toLocalDateTime());
+                        user.setLastAccess(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                         try {
                             userDbRepository.save(user);
                         } catch (DataIntegrityViolationException e) {
@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
             userDb.setPassword(passwordEncoder.encode(user.getPassword()));
             userDb.setEmail(user.getEmail());
             userDb.setComment("");
-            userDb.setRecordDate(OffsetDateTime.now().toLocalDateTime());
+            userDb.setRecordDate(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
             userDb.setStatus(statusUtils.getActiveStatus());
             userDb.setRole(roleUtils.getUserRole());
             var userSaved = userDbRepository.save(userDb);

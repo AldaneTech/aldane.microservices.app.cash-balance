@@ -67,6 +67,7 @@ public class StatusServiceImpl implements StatusService {
 
     @Override
     public boolean deleteStatus(Long id) {
+        if (Long.valueOf(1L).equals(id) || Long.valueOf(2L).equals(id)) return false;
         try {
             var statusDb = statusDbRepository.findById(id).orElse(null);
             if(statusDb != null){

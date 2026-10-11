@@ -1,6 +1,7 @@
 package net.aldane.cash_balance.repository.db.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,8 +13,8 @@ public class AccountEntryDb {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "amount")
-    private Float amount;
+    @Column(name = "amount", nullable = false, precision = 18, scale = 2)
+    private BigDecimal amount;
 
     @ManyToOne
     @JoinColumn(name = "wallet_id")
@@ -64,11 +65,11 @@ public class AccountEntryDb {
         this.status = status;
     }
 
-    public Float getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Float amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

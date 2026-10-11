@@ -85,7 +85,7 @@ public class StoreServiceImpl implements StoreService {
                 storeDb.setComment("");
             }
             storeDb.setStatus(statusUtils.getActiveStatus());
-            storeDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+            storeDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
             storeDb.setUser(authUtils.getUser());
             var brandSaved = storeDbRepository.save(storeDb);
             return storeMapper.storeDbToStore(brandSaved);
@@ -101,7 +101,7 @@ public class StoreServiceImpl implements StoreService {
             var storeDb = storeDbRepository.findById(id).orElse(null);
             if (storeDb != null && (authUtils.isUserAdmin() || storeDb.getUser().getId().equals(authUtils.getUser().getId()))) {
                 storeDb.setStatus(statusUtils.getDeletedStatus());
-                storeDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                storeDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 storeDbRepository.save(storeDb);
                 return true;
             }
@@ -120,7 +120,7 @@ public class StoreServiceImpl implements StoreService {
                     log.warn("User does not have permission to update this brand");
                     return null;
                 }
-                storeDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                storeDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 if (store.getName() != null && !store.getName().trim().isBlank()) {
                     storeDb.setName(store.getName());
                 }

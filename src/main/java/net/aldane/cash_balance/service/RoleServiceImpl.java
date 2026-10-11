@@ -73,6 +73,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public boolean deleteRole(Long id) {
+        if (Long.valueOf(1L).equals(id) || Long.valueOf(2L).equals(id)) return false;
         try {
             var roleDb = roleDbRepository.findById(id).orElse(null);
             if(roleDb != null){
@@ -101,7 +102,7 @@ public class RoleServiceImpl implements RoleService {
                 } else {
                     roleDb.setComment(role.getComment());
                 }
-                if(role.getStatus().getId() != null){
+                if(role.getStatus() != null && role.getStatus().getId() != null){
                     roleDb.setStatus(statusUtils.findStatusDb(role.getStatus().getId()));
                 }
                 return roleMapper.roleDbToRole(roleDbRepository.save(roleDb));

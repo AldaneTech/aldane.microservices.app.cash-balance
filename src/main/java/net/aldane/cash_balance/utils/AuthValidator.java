@@ -10,6 +10,7 @@ public class AuthValidator {
 
     public boolean isOwnerOrAdmin(Long resourceOwnerId) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) return false;
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof UserDetails customUser) {

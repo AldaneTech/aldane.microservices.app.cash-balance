@@ -85,7 +85,7 @@ public class CategoryServiceImpl implements CategoryService {
                 categoryDb.setComment("");
             }
             categoryDb.setStatus(statusUtils.getActiveStatus());
-            categoryDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+            categoryDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
             categoryDb.setUser(authUtils.getUser());
             var brandSaved = categoryDbRepository.save(categoryDb);
             return categoryMapper.categoryDbToCategory(brandSaved);
@@ -101,7 +101,7 @@ public class CategoryServiceImpl implements CategoryService {
             var categoryDb = categoryDbRepository.findById(id).orElse(null);
             if (categoryDb != null && (authUtils.isUserAdmin() || categoryDb.getUser().getId().equals(authUtils.getUser().getId()))) {
                 categoryDb.setStatus(statusUtils.getDeletedStatus());
-                categoryDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                categoryDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 categoryDbRepository.save(categoryDb);
                 return true;
             }
@@ -120,7 +120,7 @@ public class CategoryServiceImpl implements CategoryService {
                     log.warn("User does not have permission to update this brand");
                     return null;
                 }
-                categoryDb.setLastModification(OffsetDateTime.now().toLocalDateTime());
+                categoryDb.setLastModification(OffsetDateTime.now(java.time.ZoneOffset.UTC).toLocalDateTime());
                 if (category.getName() != null && !category.getName().trim().isBlank()) {
                     categoryDb.setName(category.getName());
                 }

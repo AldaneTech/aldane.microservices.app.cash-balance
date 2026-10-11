@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 public class AuthUtils {
 
     public UserDb getUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) return null;
+        Object principal = authentication.getPrincipal();
         if (principal instanceof UserDetails) {
             return ((UserDetails) principal).getUser();
         }
@@ -18,7 +20,9 @@ public class AuthUtils {
     }
 
     public boolean isUserAdmin(){
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) return false;
+        Object principal = authentication.getPrincipal();
         if (principal instanceof UserDetails) {
             var authorities = ((UserDetails) principal).getAuthorities();
             for (var authority : authorities) {

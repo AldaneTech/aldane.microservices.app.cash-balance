@@ -50,6 +50,7 @@ public class AccountEntryController implements AccountEntryApi {
 
     @Override
     public ResponseEntity<AccountEntry> updateAccountEntry(@Valid AccountEntry accountEntry) {
-        return accountEntryService.updateAccountEntry(accountEntry) != null ? ResponseEntity.ok(accountEntry) : ResponseEntity.badRequest().build();
+        var result = accountEntryService.updateAccountEntry(accountEntry);
+        return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
     }
 }
