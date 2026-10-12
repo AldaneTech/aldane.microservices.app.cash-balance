@@ -124,7 +124,7 @@ public class BrandServiceImpl implements BrandService {
                 if (brand.getName() != null && !brand.getName().trim().isBlank()) {
                     brandDb.setName(brand.getName());
                 }
-                if (brand.getComment() != null && !brand.getComment().trim().isBlank()) {
+                if (brand.getComment() != null) {
                     brandDb.setComment(brand.getComment());
                 }
                 return brandMapper.brandDbToBrand(brandDbRepository.save(brandDb));

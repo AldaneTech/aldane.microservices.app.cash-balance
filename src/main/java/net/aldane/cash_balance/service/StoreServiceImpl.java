@@ -124,7 +124,7 @@ public class StoreServiceImpl implements StoreService {
                 if (store.getName() != null && !store.getName().trim().isBlank()) {
                     storeDb.setName(store.getName());
                 }
-                if (store.getComment() != null && !store.getComment().trim().isBlank()) {
+                if (store.getComment() != null) {
                     storeDb.setComment(store.getComment());
                 }
                 return storeMapper.storeDbToStore(storeDbRepository.save(storeDb));

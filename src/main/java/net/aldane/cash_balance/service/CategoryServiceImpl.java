@@ -124,7 +124,7 @@ public class CategoryServiceImpl implements CategoryService {
                 if (category.getName() != null && !category.getName().trim().isBlank()) {
                     categoryDb.setName(category.getName());
                 }
-                if (category.getComment() != null && !category.getComment().trim().isBlank()) {
+                if (category.getComment() != null) {
                     categoryDb.setComment(category.getComment());
                 }
                 return categoryMapper.categoryDbToCategory(categoryDbRepository.save(categoryDb));
