@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AccountEntryDbRepository extends JpaRepository<AccountEntryDb, Long> {
+public interface AccountEntryDbRepository extends JpaRepository<AccountEntryDb, Long>, org.springframework.data.jpa.repository.JpaSpecificationExecutor<AccountEntryDb> {
     List<AccountEntryDb> findByWallet_User_IdAndWallet_Status_IdOrderByIdAsc(Long userId, Long statusId);
 
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)

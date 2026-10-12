@@ -14,6 +14,12 @@ import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.time.LocalDate;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import net.aldane.cash_balance_api_server_java.model.AccountEntryPage;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,6 +43,48 @@ public class AccountEntryServiceImpl implements AccountEntryService {
         this.entries = entries; this.wallets = wallets; this.mapper = mapper; this.auth = auth;
         this.categories = categories; this.brands = brands; this.stores = stores;
         this.types = types; this.statuses = statuses;
+    }
+
+    @Override
+    public AccountEntryPage searchAccountEntries(Long walletId, LocalDate from, LocalDate to, Long categoryId, Long typeId,
+            String search, Integer page, Integer size, String sortBy, String direction) {
+        checkSearchFilters(walletId, from, to);
+        int p = page == null ? 0 : page, s = size == null ? 20 : size;
+        String sort = sortBy == null ? "date" : sortBy, dir = direction == null ? "desc" : direction;
+        if (p < 0 || p > 21474836 || s < 1 || s > 100 || !List.of("date", "amount", "id").contains(sort)
+                || !List.of("asc", "desc").contains(dir) || (categoryId != null && categoryId < 1)
+                || (typeId != null && typeId < 1) || (search != null && search.length() > 200)) throw badRequest();
+        Long owner = auth.getUser().getId();
+        Specification<AccountEntryDb> spec = (root, query, cb) -> {
+            var predicates = new ArrayList<jakarta.persistence.criteria.Predicate>();
+            predicates.add(cb.equal(root.get("wallet").get("user").get("id"), owner));
+            predicates.add(cb.equal(root.get("wallet").get("status").get("id"), 1L));
+            if (walletId != null) predicates.add(cb.equal(root.get("wallet").get("id"), walletId));
+            if (from != null) predicates.add(cb.greaterThanOrEqualTo(root.get("date"), from.atStartOfDay()));
+            if (to != null) predicates.add(cb.lessThan(root.get("date"), to.plusDays(1).atStartOfDay()));
+            if (categoryId != null) predicates.add(cb.equal(root.get("category").get("id"), categoryId));
+            if (typeId != null) predicates.add(cb.equal(root.get("accountEntryType").get("id"), typeId));
+            if (search != null && !search.isBlank()) {
+                String literal = search.toLowerCase(Locale.ROOT).replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+                predicates.add(cb.like(cb.lower(root.get("comment")), "%" + literal + "%", '\\'));
+            }
+            return cb.and(predicates.toArray(jakarta.persistence.criteria.Predicate[]::new));
+        };
+        Sort order = Sort.by(Sort.Direction.fromString(dir), sort);
+        if (!sort.equals("id")) order = order.and(Sort.by(Sort.Direction.fromString(dir), "id"));
+        var result = entries.findAll(spec, PageRequest.of(p, s, order));
+        return new AccountEntryPage().items(mapper.accountEntryDbListToAccountEntryList(result.getContent()))
+                .page(p).size(s).totalElements(result.getTotalElements()).totalPages(result.getTotalPages());
+    }
+
+    private void checkSearchFilters(Long walletId, LocalDate from, LocalDate to) {
+        if ((from != null && to != null && from.isAfter(to)) || LocalDate.MAX.equals(to)
+                || (walletId != null && walletId < 1)) throw badRequest();
+        if (walletId != null) {
+            var wallet = wallets.findById(walletId).orElseThrow(AccountEntryServiceImpl::notFound);
+            if (wallet.getUser() == null || !wallet.getUser().getId().equals(auth.getUser().getId())
+                    || wallet.getStatus() == null || !Long.valueOf(1L).equals(wallet.getStatus().getId())) throw notFound();
+        }
     }
 
     @Override
@@ -73,7 +121,8 @@ public class AccountEntryServiceImpl implements AccountEntryService {
         entry.setStatus(statuses.findById(1L).orElseThrow(AccountEntryServiceImpl::badRequest));
         if (entry.getDate() == null) entry.setDate(LocalDateTime.now(java.time.ZoneOffset.UTC));
         resolveReferences(entry, wallet.getUser().getId());
-        changeBalance(wallet, input.getAmount());
+        entry.setAmount(normalizeAmount(input.getAmount(), entry.getAccountEntryType()));
+        changeBalance(wallet, entry.getAmount());
         return mapper.accountEntryDbToAccountEntry(entries.save(entry));
     }
 
@@ -96,9 +145,19 @@ public class AccountEntryServiceImpl implements AccountEntryService {
         var wallet = lockedWallet(entry.getWallet().getId());
         // The wallet is immutable for an existing entry.
         if (input.getWallet() != null && !wallet.getId().equals(input.getWallet().getId())) throw badRequest();
-        changeBalance(wallet, input.getAmount().subtract(entry.getAmount()));
-        entry.setAmount(input.getAmount());
+        // Resolve and validate a detached candidate before modifying managed entities or the balance.
+        var candidate = mapper.accountEntryToAccountEntryDb(input);
+        if (input.getTypeOperation() == null) candidate.setAccountEntryType(entry.getAccountEntryType());
+        resolveReferences(candidate, wallet.getUser().getId());
+        BigDecimal amount = normalizeAmount(input.getAmount(), candidate.getAccountEntryType());
+        changeBalance(wallet, amount.subtract(entry.getAmount()));
+        entry.setAmount(amount);
         entry.setComment(input.getComment());
+        entry.setCategory(candidate.getCategory());
+        entry.setBrand(candidate.getBrand());
+        entry.setStore(candidate.getStore());
+        entry.setAccountEntryType(candidate.getAccountEntryType());
+        if (input.getDate() != null) entry.setDate(candidate.getDate());
         return mapper.accountEntryDbToAccountEntry(entries.save(entry));
     }
 
@@ -123,19 +182,24 @@ public class AccountEntryServiceImpl implements AccountEntryService {
             var ref = categories.findById(requiredId(entry.getCategory().getId())).orElseThrow(AccountEntryServiceImpl::badRequest);
             checkReference(ref.getUser(), ref.getStatus(), ownerId); entry.setCategory(ref);
         }
-        if (entry.getBrand() != null && entry.getBrand().getId() != null) {
-            var ref = brands.findById(entry.getBrand().getId()).orElseThrow(AccountEntryServiceImpl::badRequest);
+        if (entry.getBrand() != null) {
+            var ref = brands.findById(requiredId(entry.getBrand().getId())).orElseThrow(AccountEntryServiceImpl::badRequest);
             checkReference(ref.getUser(), ref.getStatus(), ownerId); entry.setBrand(ref);
         } else entry.setBrand(null);
-        if (entry.getStore() != null && entry.getStore().getId() != null) {
-            var ref = stores.findById(entry.getStore().getId()).orElseThrow(AccountEntryServiceImpl::badRequest);
+        if (entry.getStore() != null) {
+            var ref = stores.findById(requiredId(entry.getStore().getId())).orElseThrow(AccountEntryServiceImpl::badRequest);
             checkReference(ref.getUser(), ref.getStatus(), ownerId); entry.setStore(ref);
         } else entry.setStore(null);
-        if (entry.getAccountEntryType() != null) {
-            var ref = types.findById(requiredId(entry.getAccountEntryType().getId())).orElseThrow(AccountEntryServiceImpl::badRequest);
-            if (ref.getStatus() == null || !Long.valueOf(1L).equals(ref.getStatus().getId())) throw badRequest();
-            entry.setAccountEntryType(ref);
-        }
+        if (entry.getAccountEntryType() == null) throw badRequest();
+        var type = types.findById(requiredId(entry.getAccountEntryType().getId())).orElseThrow(AccountEntryServiceImpl::badRequest);
+        if (type.getStatus() == null || !Long.valueOf(1L).equals(type.getStatus().getId())) throw badRequest();
+        entry.setAccountEntryType(type);
+    }
+
+    private static BigDecimal normalizeAmount(BigDecimal amount, AccountEntryTypeDb type) {
+        if (Long.valueOf(1L).equals(type.getId())) return amount.abs().setScale(2, RoundingMode.UNNECESSARY);
+        if (Long.valueOf(2L).equals(type.getId())) return amount.abs().negate().setScale(2, RoundingMode.UNNECESSARY);
+        return amount.setScale(2, RoundingMode.UNNECESSARY);
     }
 
     private static Long requiredId(Long id) { if (id == null) throw badRequest(); return id; }

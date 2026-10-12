@@ -44,6 +44,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public User getMe() {
+        var user = userDbRepository.findById(authUtils.getUser().getId())
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED));
+        return userMapper.userDbToUser(user);
+    }
+
+    @Override
     public User getUserById(Long userId) {
         try {
             var user = userDbRepository.findById(userId).orElse(null);
@@ -189,6 +197,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Use /change-password");
+        }
         try {
             var userDb = userDbRepository.findById(user.getId()).orElse(null);
             if (userDb != null) {
@@ -199,9 +210,6 @@ public class UserServiceImpl implements UserService {
 
                 if (user.getUsername() != null && !user.getUsername().trim().isBlank()) {
                     userDb.setUsername(user.getUsername());
-                }
-                if (user.getPassword() != null && !user.getPassword().trim().isBlank()) {
-                    userDb.setPassword(passwordEncoder.encode(user.getPassword()));
                 }
                 if (user.getEmail() != null && !user.getEmail().trim().isBlank()) {
                     userDb.setEmail(user.getEmail());

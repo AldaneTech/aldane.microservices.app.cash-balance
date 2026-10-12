@@ -23,16 +23,17 @@ public class JwtUtil {
     }
 
     public String generateToken(String username) {
-        return generateToken(username, null);
+        return generateToken(username, null, null);
     }
 
     public String generateToken(net.aldane.cash_balance.security.model.UserDetails user) {
-        return generateToken(user.getUsername(), user.getUser().getId());
+        return generateToken(user.getUsername(), user.getUser().getId(), credentialStamp(user.getPassword()));
     }
 
-    private String generateToken(String username, Long userId) {
+    private String generateToken(String username, Long userId, String credentials) {
         return Jwts.builder()
                 .claim("uid", userId)
+                .claim("credentials", credentials)
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // Expira en 10 horas
@@ -45,6 +46,8 @@ public class JwtUtil {
         if (userDetails instanceof net.aldane.cash_balance.security.model.UserDetails user) {
             var id = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody().get("uid", Long.class);
             if (!user.getUser().getId().equals(id)) return false;
+            String stamp = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody().get("credentials", String.class);
+            if (stamp == null || !java.security.MessageDigest.isEqual(stamp.getBytes(StandardCharsets.UTF_8), credentialStamp(user.getPassword()).getBytes(StandardCharsets.UTF_8))) return false;
         }
         return (username != null && username.equals(userDetails.getUsername()) && !isTokenExpired(token)
                 && userDetails.isEnabled() && userDetails.isAccountNonLocked()
@@ -72,5 +75,16 @@ public class JwtUtil {
                 .before(new Date());
     }
 
+    // A keyed fingerprint invalidates previous tokens without exposing the stored password hash.
+    private String credentialStamp(String passwordHash) {
+        try {
+            javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+            mac.init(key);
+            return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(
+                    mac.doFinal((passwordHash == null ? "" : passwordHash).getBytes(StandardCharsets.UTF_8)));
+        } catch (java.security.GeneralSecurityException e) {
+            throw new IllegalStateException("Cannot fingerprint credentials", e);
+        }
+    }
 }
 

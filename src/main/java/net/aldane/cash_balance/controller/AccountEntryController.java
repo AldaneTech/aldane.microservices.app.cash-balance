@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import net.aldane.cash_balance.service.AccountEntryService;
 import net.aldane.cash_balance_api_server_java.api.AccountEntryApi;
 import net.aldane.cash_balance_api_server_java.model.AccountEntry;
+import net.aldane.cash_balance_api_server_java.model.AccountEntryPage;
+import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,5 +54,11 @@ public class AccountEntryController implements AccountEntryApi {
     public ResponseEntity<AccountEntry> updateAccountEntry(@Valid AccountEntry accountEntry) {
         var result = accountEntryService.updateAccountEntry(accountEntry);
         return result != null ? ResponseEntity.ok(result) : ResponseEntity.badRequest().build();
+    }
+    @Override
+    public ResponseEntity<AccountEntryPage> searchAccountEntries(
+            Long walletId, LocalDate from, LocalDate to, Long categoryId, Long typeId,
+            String search, Integer page, Integer size, String sortBy, String direction) {
+        return ResponseEntity.ok(accountEntryService.searchAccountEntries(walletId, from, to, categoryId, typeId, search, page, size, sortBy, direction));
     }
 }
