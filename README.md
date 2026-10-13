@@ -47,3 +47,17 @@ The updated JWT includes a keyed credential fingerprint. On first deployment, ex
 Creating a movement requires `amount`, `wallet.id` and an active `type_operation.id`. Type **1 (income)** always stores `abs(amount)`; type **2 (expense)** always stores `-abs(amount)`, regardless of the submitted sign. Other active types preserve the submitted sign. Stored signed amounts drive the wallet balance and dashboard totals.
 
 Editing requires `id` and `amount`. It updates comment, category, brand, store, date and type. Omitted or null category/brand/store clears the association. Omitted date or type keeps its existing value. References must be active and belong to the wallet owner. The wallet remains fixed. Changing the type recalculates the signed amount and applies only the difference from the old stored amount to the balance.
+
+
+## User language preferences
+
+`GET /me/preferences` and `PUT /me/preferences` expose the authenticated user's
+language (`es` or `en`). New and existing accounts default to Spanish. The update
+body is `{ "language": "en" }`; it cannot specify another user.
+
+Before deploying this version to an existing PostgreSQL database, apply
+`src/main/resources/db.changelog/migrate-user-language.sql`. The script is
+idempotent and only adds the language column. A matching Liquibase change set is
+included for installations that manage their schema through Liquibase. This
+repository currently has Liquibase properties but no Liquibase runtime dependency;
+the properties alone do not apply the migration.

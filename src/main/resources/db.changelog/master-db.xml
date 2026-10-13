@@ -10,4 +10,5 @@
     <include file="changelog-003-constraints.xml"/>
     <include file="changelog-004-inserts.xml"/>
 
+    <include file="changelog-005-user-language.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

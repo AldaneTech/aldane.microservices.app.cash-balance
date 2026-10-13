@@ -37,6 +37,12 @@ public class UserDb {
     @JoinColumn(name = "role_id", nullable = false)
     private RoleDb role;
 
+    @Column(name = "language", nullable = false, length = 2)
+    private String language = "es";
+
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
+
     public Long getId() {
         return id;
     }
