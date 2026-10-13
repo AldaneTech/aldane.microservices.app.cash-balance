@@ -5,7 +5,7 @@
 
 	<groupId>net.aldane</groupId>
 	<artifactId>cash-balance</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 
 	<name>Cash Balance Microservice - Server</name>
 	<description>REST Microservice for cash balance management</description>
