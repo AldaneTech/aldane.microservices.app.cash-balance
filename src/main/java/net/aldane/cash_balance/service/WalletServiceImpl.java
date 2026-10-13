@@ -145,8 +145,8 @@ public class WalletServiceImpl implements WalletService {
                 if (wallet.getName() != null && !wallet.getName().trim().isBlank()) {
                     walletDb.setName(wallet.getName());
                 }
-                if (wallet.getComment() != null && !wallet.getComment().trim().isBlank()) {
-                    walletDb.setComment(wallet.getComment());
+                if (wallet.getComment() != null) {
+                    walletDb.setComment(wallet.getComment().trim());
                 }
                 return walletMapper.walletDbToWallet(walletDbRepository.save(walletDb));
             }
