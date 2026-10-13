@@ -61,3 +61,22 @@ idempotent and only adds the language column. A matching Liquibase change set is
 included for installations that manage their schema through Liquibase. This
 repository currently has Liquibase properties but no Liquibase runtime dependency;
 the properties alone do not apply the migration.
+
+
+## Release images for the VPS
+
+The application version is independent of the API library version: backend
+`1.0.0` uses API library `1.5.0`.
+
+Push an annotated tag matching the POM version (for example, `v1.0.0`) to trigger
+`Build and Publish Docker Image`. The workflow validates the version, builds and
+tests the application, then publishes:
+
+```text
+ghcr.io/aldanetech/aldane.microservices.app.cash-balance:1.0.0
+```
+
+The workflow does not deploy to Kubernetes or update a running VPS. Select the
+explicit image version in your server configuration. Apply the language migration
+before starting the updated backend. If the GHCR package is private, the VPS must
+log in with a token that can read the package.

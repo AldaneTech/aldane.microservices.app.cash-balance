@@ -1,4 +1,4 @@
-name: Build and Deploy to Kubernetes
+name: Build and Publish Docker Image
 
 on:
   push:
@@ -6,9 +6,8 @@ on:
       - 'v*'
 
 jobs:
-  build-and-deploy:
+  publish-image:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       packages: write
@@ -20,27 +19,39 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
 
-      - name: Package with Maven
+      - name: Validate release version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn clean package -DskipTests
-
-      - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - run: docker build -t ghcr.io/aldanetech/aldane.microservices.app.cash-balance:latest .
-
-      - run: docker push ghcr.io/aldanetech/aldane.microservices.app.cash-balance:latest
-
-      - name: Write kubeconfig
+        shell: bash
         run: |
-          echo "${{ secrets.KUBECONFIG_PROD }}" | base64 -d > kubeconfig.yaml
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Expected a release tag such as v1.0.0."
+            exit 1
+          fi
+          POM_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+          if [[ "$VERSION" != "$POM_VERSION" ]]; then
+            echo "Tag version $VERSION does not match POM version $POM_VERSION."
+            exit 1
+          fi
+          echo "IMAGE_VERSION=$VERSION" >> "$GITHUB_ENV"
 
-      - name: Verificar kubeconfig
-        run: |
-          echo "Contenido del kubeconfig:"
-          head -n 7 kubeconfig.yaml || echo "Archivo vacío"
+      - name: Build and test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn --batch-mode clean verify
 
-      - env:
-          KUBECONFIG: ${{ github.workspace }}/kubeconfig.yaml
-        run: kubectl apply -f k8s/deployment.yaml
+      - name: Log in to GitHub Container Registry
+        env:
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$REGISTRY_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+      - name: Build versioned image
+        run: docker build -t "ghcr.io/aldanetech/aldane.microservices.app.cash-balance:$IMAGE_VERSION" .
+
+      - name: Push versioned image
+        run: docker push "ghcr.io/aldanetech/aldane.microservices.app.cash-balance:$IMAGE_VERSION"
